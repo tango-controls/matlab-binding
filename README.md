@@ -3,9 +3,7 @@
 # About the [Matlab](http://www.mathworks.com) and [Octave](https://www.gnu.org/software/octave/) binding for Tango
 
 This is the Matlab (or Octave) client API for [Tango](http://tango-controls.org). 
-It runs on both Linux and Windows x64. 
-So far, the x86 (i.e. 32 bits) mode is still supported on Linux but might be abandoned in a near future.  
-However, here 'abandoned' simply means not tested under x86. The code will certainly continue to compile and run smoothly in x86 mode.
+It runs on both Linux and Windows x64. So far, the x86 (i.e. 32 bits) mode is still supported on Linux but might be abandoned in a near future. However, here 'abandoned' simply means not tested under x86. The code will certainly continue to compile and run smoothly in x86 mode.
 
 # Important Note
 In any release <= 3.0.0, the Tango DevBoolean type used to be mapped to Matlab unint8. Since release 3.1.0, it’s now mapped to Matlab logical type. It means that any existing code must be adapted to become compatible with the new DevBoolean mapping:
