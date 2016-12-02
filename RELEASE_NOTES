@@ -1,4 +1,20 @@
 //=============================================================================
+// RELEASE 3.1.0 - 12/02/2016 - N.LECLERCQ - SOLEIL
+//=============================================================================
+IMPORTANT NOTE:
+- The present release requires TANGO 9.2.2 or higher 
+
+- The Tango DevBoolean type is now mapped to Matlab logical type (used to be mapped to unit8). 
+  This requires existing code to be adapted: 
+  	argin = uint8(1) -- is now --> argin = true  
+  	argin = uint8(0) -- is now --> argin = false  
+
+NEW FEATURES: 
+  - no new feature, first commit to github, tested with Matlab 2016b
+
+  Please send bug report, comment or suggestion to the Tango mailing list.
+  
+//=============================================================================
 // RELEASE 3.0.0 - 03/20/2014 - L.FARVACQUE- ESRF & N.LECLERCQ - SOLEIL
 //=============================================================================
 IMPORTANT NOTE:
