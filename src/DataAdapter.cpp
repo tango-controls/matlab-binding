@@ -14,7 +14,7 @@
 //=============================================================================
 //- DEPENDENCIES
 //=============================================================================
-#ifndef WIN32
+#if !defined(_WINDOWS)
 #  include <sys/time.h> 
 #endif 
 #include "StandardHeader.h"
@@ -98,7 +98,7 @@ DataAdapter::~DataAdapter (void)
 //=============================================================================
 int DataAdapter::encode_argin (DeviceDesc * _ddesc, 
                                int _cmd_id, 
-                               mxArray * _argin,
+                               const mxArray* _argin,
                                Tango::DeviceData & dd_in_)
 {
   if (_ddesc == 0) 
@@ -1506,7 +1506,7 @@ int DataAdapter::decode_argout (DeviceDesc* _ddesc,
 //=============================================================================
 int DataAdapter::encode_attr (DeviceDesc * _ddesc,
                               int _attr_id,
-                              mxArray * _argin,
+                              const mxArray* _argin,
                               Tango::DeviceAttribute & value_)
 {
   //- check input
@@ -1526,7 +1526,7 @@ int DataAdapter::encode_attr (DeviceDesc * _ddesc,
   //- set common values
   value_.quality = Tango::ATTR_VALID;
   value_.name = attr_list[_attr_id].name;
-#ifdef WIN32
+#if defined(_WINDOWS)
   struct _timeb now;
   ::_ftime(&now);
   value_.time.tv_sec  = (CORBA::Long)now.time;
@@ -2662,7 +2662,8 @@ template<> int DataAdapter::vector_to_mxarray<Tango::DevBoolean,Tango::DevVarBoo
 int DataAdapter::decode_attr (DeviceDesc* _ddesc,
                               int _attr_id,
                               Tango::DeviceAttribute& _value,
-                              mxArray *& value_, mxArray *& setvalue_)
+                              mxArray *& value_, 
+                              mxArray *& setvalue_)
 {
     //- check input
     if (_ddesc == 0)
@@ -2930,7 +2931,7 @@ int DataAdapter::decode_attr (DeviceDesc* _ddesc,
 //=============================================================================
 //- DataAdapter::mxarray_to_vector_of_string
 //============================================================================= 
-std::vector<std::string> * DataAdapter::mxarray_to_vector_of_string (mxArray * mx_array) 
+std::vector<std::string> * DataAdapter::mxarray_to_vector_of_string (const mxArray* mx_array) 
 {
  //- be sure mx_array is a cell array of string
  if (MEX_UTILS->is_array_of_string(mx_array) == false) 
@@ -2973,7 +2974,7 @@ std::vector<std::string> * DataAdapter::mxarray_to_vector_of_string (mxArray * m
 //- DataAdapter::mxarray_to_vector_of_vector_of_string
 //============================================================================= 
 std::vector<std::vector<std::string> >* 
-DataAdapter::mxarray_to_vector_of_vector_of_string (mxArray * mx_array)
+DataAdapter::mxarray_to_vector_of_vector_of_string (const mxArray* mx_array)
 {
  if (MEX_UTILS->is_array_of_array_of_string(mx_array) == false) {
    MEX_UTILS->set_error("invalid mxArray specified",
@@ -3028,7 +3029,7 @@ DataAdapter::mxarray_to_vector_of_vector_of_string (mxArray * mx_array)
 //- DataAdapter::mxarray_to_vector_dvlsa
 //============================================================================= 
 std::vector<Tango::DevVarLongStringArray*>* 
-DataAdapter::mxarray_to_vector_of_dvlsa (mxArray * mx_array)
+DataAdapter::mxarray_to_vector_of_dvlsa (const mxArray* mx_array)
 {
  if (MEX_UTILS->is_array_of_struct(mx_array) == false) {
    MEX_UTILS->set_error("invalid mxArray specified",
@@ -3148,7 +3149,7 @@ _error:
 //- DataAdapter::mxarray_to_vector_dvdsa
 //============================================================================= 
 std::vector<Tango::DevVarDoubleStringArray*>* 
-DataAdapter::mxarray_to_vector_of_dvdsa (mxArray * mx_array)
+DataAdapter::mxarray_to_vector_of_dvdsa (const mxArray* mx_array)
 {
  if (MEX_UTILS->is_array_of_struct(mx_array) == false) {
    MEX_UTILS->set_error("invalid mxArray specified",

@@ -14,7 +14,7 @@
 //-----------------------------------------------------------------------------
 //- WINDOWS PRAGMA
 //-----------------------------------------------------------------------------
-#if defined (WIN32)
+#if defined(_WINDOWS)
 # pragma warning(push)
 # pragma warning(disable:4786)
 # pragma warning(disable:4800)
@@ -346,7 +346,7 @@ int TangoBinding::command_inout (void)
   if (arg_in_type != Tango::DEV_VOID) 
   {
     //- get <argin> from the 4th input arg
-    mxArray * arg_in = MEX_ARGS->get_input_array(k4TH_ARG);
+    const mxArray* arg_in = MEX_ARGS->get_input_array(k4TH_ARG);
     if (arg_in == 0) 
     {
       std::string r = "failed to execute " + cmd + " on " + dev;
@@ -415,7 +415,7 @@ int TangoBinding::command_inout_asynch (void)
     SET_DEFAULT_PRHS_THEN_RETURN(kError); 
 
   //- get <forget> option from the 4th input arg
-  mxArray * mx_forget = MEX_ARGS->get_input_array(k4TH_ARG, kMX_ANY, 1, 1);
+  const mxArray* mx_forget = MEX_ARGS->get_input_array(k4TH_ARG, kMX_ANY, 1, 1);
   if (mx_forget == 0) 
   {
     std::string r = "failed to execute " + cmd + " on " + dev;
@@ -458,7 +458,7 @@ int TangoBinding::command_inout_asynch (void)
   if (arg_in_type != Tango::DEV_VOID) 
   {
     //- get <argin> from the 5th input arg
-    mxArray * arg_in = MEX_ARGS->get_input_array(k5TH_ARG);
+    const mxArray* arg_in = MEX_ARGS->get_input_array(k5TH_ARG);
     if (arg_in == 0) 
     {
       std::string r = "failed to execute " + cmd + " on " + dev;
@@ -560,7 +560,7 @@ int TangoBinding::command_inout_asynch (void)
 int TangoBinding::command_inout_reply (void)
 {
   //- get <asynch request descriptor> from 2nd input arg
-  mxArray * mx_rdesc = MEX_ARGS->get_input_array(k2ND_ARG, ::mxSTRUCT_CLASS, 1, 1);
+  const mxArray* mx_rdesc = MEX_ARGS->get_input_array(k2ND_ARG, ::mxSTRUCT_CLASS, 1, 1);
   if (mx_rdesc == 0) 
   {
     MEX_UTILS->push_error("invalid request descriptor specified",
@@ -647,7 +647,7 @@ int TangoBinding::command_inout_reply (void)
   Tango::DevLong req_id = reinterpret_cast<Tango::DevLong*>(::mxGetPr(mx_array))[0];
 
   //- get timeout option the 3rd input arg
-  mxArray * mx_tmo = MEX_ARGS->get_input_array(k3RD_ARG, kMX_ANY, 1, 1);
+  const mxArray* mx_tmo = MEX_ARGS->get_input_array(k3RD_ARG, kMX_ANY, 1, 1);
   if (mx_tmo == 0) 
   {
     MEX_UTILS->push_error("invalid argin specified",
@@ -711,7 +711,7 @@ int TangoBinding::command_history (void)
     SET_DEFAULT_PRHS_THEN_RETURN(kError); 
 
   //- get command history depth from the 4th input arg
-  mxArray * mx_depth = MEX_ARGS->get_input_array(k4TH_ARG, ::mxDOUBLE_CLASS, 1, 1);
+  const mxArray* mx_depth = MEX_ARGS->get_input_array(k4TH_ARG, ::mxDOUBLE_CLASS, 1, 1);
   if (mx_depth == 0) 
   {
     MEX_UTILS->push_error("invalid argin specified",
@@ -1127,7 +1127,7 @@ int TangoBinding::read_attribute_asynch (void)
 int TangoBinding::read_attribute_reply (void)
 {
   //- get <asynch. request descriptor> from 2nd input arg
-  mxArray * mx_rdesc = MEX_ARGS->get_input_array(k2ND_ARG, ::mxSTRUCT_CLASS, 1, 1);
+  const mxArray* mx_rdesc = MEX_ARGS->get_input_array(k2ND_ARG, ::mxSTRUCT_CLASS, 1, 1);
   if (mx_rdesc == 0) 
   {
     MEX_UTILS->push_error("invalid request descriptor specified",
@@ -1240,7 +1240,7 @@ int TangoBinding::read_attribute_reply (void)
   Tango::DevLong req_id = reinterpret_cast<Tango::DevLong*>(::mxGetPr(mx_array))[0];
 
   //- get timeout option the 3rd input arg
-  mxArray * mx_tmo = MEX_ARGS->get_input_array(k3RD_ARG, kMX_ANY, 1, 1);
+  const mxArray* mx_tmo = MEX_ARGS->get_input_array(k3RD_ARG, kMX_ANY, 1, 1);
   if (mx_tmo == 0) 
   {
     MEX_UTILS->push_error("invalid argin specified",
@@ -1499,7 +1499,7 @@ int TangoBinding::read_attributes (void)
     SET_DEFAULT_PRHS_THEN_RETURN(kError); 
 
   //- get <attributes list> from the 3rd MEX-file input arg
-  mxArray * attr_list = MEX_ARGS->get_input_array(k3RD_ARG, ::mxCELL_CLASS, 1);
+  const mxArray* attr_list = MEX_ARGS->get_input_array(k3RD_ARG, ::mxCELL_CLASS, 1);
   if (attr_list == 0)
   {
     MEX_UTILS->push_error("invalid argin specified",
@@ -1620,7 +1620,7 @@ int TangoBinding::read_attributes_asynch (void)
     SET_DEFAULT_PRHS_THEN_RETURN(kError); 
 
   //- get <attributes list> from the 3rd MEX-file input arg
-  mxArray * attr_list = MEX_ARGS->get_input_array(k3RD_ARG, ::mxCELL_CLASS, 1);
+  const mxArray* attr_list = MEX_ARGS->get_input_array(k3RD_ARG, ::mxCELL_CLASS, 1);
   if (attr_list == 0) 
   {
     MEX_UTILS->push_error("invalid argin specified",
@@ -1749,7 +1749,7 @@ int TangoBinding::read_attributes_asynch (void)
 int TangoBinding::read_attributes_reply (void)
 {
   //- get asynch request descriptor from 2nd input arg
-  mxArray * mx_rdesc = MEX_ARGS->get_input_array(k2ND_ARG, ::mxSTRUCT_CLASS, 1, 1);
+  const mxArray* mx_rdesc = MEX_ARGS->get_input_array(k2ND_ARG, ::mxSTRUCT_CLASS, 1, 1);
   if (! mx_rdesc) 
   {
     MEX_UTILS->push_error("invalid request descriptor specified",
@@ -1810,7 +1810,7 @@ int TangoBinding::read_attributes_reply (void)
   Tango::DevLong req_id = reinterpret_cast<Tango::DevLong*>(::mxGetPr(mx_array))[0];
 
   //- get <timeout> option the 3rd input arg
-  mxArray * mx_tmo = MEX_ARGS->get_input_array(k3RD_ARG, kMX_ANY, 1, 1);
+  const mxArray* mx_tmo = MEX_ARGS->get_input_array(k3RD_ARG, kMX_ANY, 1, 1);
   if (! mx_tmo) 
   {
     MEX_UTILS->push_error("invalid argin specified",
@@ -1909,7 +1909,7 @@ int TangoBinding::write_attribute (void)
   }
 
   //- get value to write from the 4th MEX-file input arg
-  mxArray * arg_in = MEX_ARGS->get_input_array(k4TH_ARG);
+  const mxArray* arg_in = MEX_ARGS->get_input_array(k4TH_ARG);
   if (! arg_in) 
   {
     std::string r = "failed to write attribute " + attr_name + " on " + dev_name;
@@ -1984,7 +1984,7 @@ int TangoBinding::write_attribute_asynch (void)
   }
 
   //- get value to write from the 4th MEX-file input arg
-  mxArray * arg_in = MEX_ARGS->get_input_array(k4TH_ARG);
+  const mxArray* arg_in = MEX_ARGS->get_input_array(k4TH_ARG);
   if (arg_in == 0) 
   {
     std::string r = "failed to write attribute " + attr_name + " on " + dev_name;
@@ -2062,7 +2062,7 @@ int TangoBinding::write_attribute_asynch (void)
 int TangoBinding::write_attribute_reply (void)
 {
   //- get asynch. request descriptor from 2nd input arg
-  mxArray * mx_rdesc = MEX_ARGS->get_input_array(k2ND_ARG, ::mxSTRUCT_CLASS, 1, 1);
+  const mxArray* mx_rdesc = MEX_ARGS->get_input_array(k2ND_ARG, ::mxSTRUCT_CLASS, 1, 1);
   if (! mx_rdesc) 
   {
     MEX_UTILS->push_error("invalid request descriptor specified",
@@ -2125,7 +2125,7 @@ int TangoBinding::write_attribute_reply (void)
   Tango::DevLong req_id = reinterpret_cast<Tango::DevLong*>(::mxGetPr(mx_array))[0];
 
   //- get <timeout> option the 3rd input arg
-  mxArray * mx_tmo = MEX_ARGS->get_input_array(k3RD_ARG, kMX_ANY, 1, 1);
+  const mxArray* mx_tmo = MEX_ARGS->get_input_array(k3RD_ARG, kMX_ANY, 1, 1);
   if (! mx_tmo) 
   {
     MEX_UTILS->push_error("invalid argin specified",
@@ -2164,7 +2164,7 @@ int TangoBinding::write_attributes (void)
     SET_DEFAULT_PRHS_THEN_RETURN(kError); 
 
   //- get <attribute value list> from the 3rd MEX-file input arg
-  mxArray * av_list = MEX_ARGS->get_input_array(k3RD_ARG, ::mxSTRUCT_CLASS, 1);
+  const mxArray* av_list = MEX_ARGS->get_input_array(k3RD_ARG, ::mxSTRUCT_CLASS, 1);
   if (! av_list) 
   {
     MEX_UTILS->push_error("invalid argin specified",
@@ -2276,7 +2276,7 @@ int TangoBinding::write_attributes_asynch (void)
     SET_DEFAULT_PRHS_THEN_RETURN(kError); 
 
   //- get <attribute value list> from the 3rd MEX-file input arg
-  mxArray * av_list = MEX_ARGS->get_input_array(k3RD_ARG, ::mxSTRUCT_CLASS, 1);
+  const mxArray* av_list = MEX_ARGS->get_input_array(k3RD_ARG, ::mxSTRUCT_CLASS, 1);
   if (! av_list) 
   {
     MEX_UTILS->push_error("invalid argin specified",
@@ -2428,7 +2428,7 @@ int TangoBinding::write_attributes_asynch (void)
 int TangoBinding::write_attributes_reply (void)
 {
   //- get request descriptor from 2nd input arg
-  mxArray * mx_rdesc = MEX_ARGS->get_input_array(k2ND_ARG, ::mxSTRUCT_CLASS, 1, 1);
+  const mxArray* mx_rdesc = MEX_ARGS->get_input_array(k2ND_ARG, ::mxSTRUCT_CLASS, 1, 1);
   if (mx_rdesc == 0) 
   {
     MEX_UTILS->push_error("invalid request descriptor specified",
@@ -2491,7 +2491,7 @@ int TangoBinding::write_attributes_reply (void)
   Tango::DevLong req_id = reinterpret_cast<Tango::DevLong*>(::mxGetPr(mx_array))[0];
 
   //- get <timeout> option the 3rd input arg
-  mxArray * mx_tmo = MEX_ARGS->get_input_array(k3RD_ARG, kMX_ANY, 1, 1);
+  const mxArray* mx_tmo = MEX_ARGS->get_input_array(k3RD_ARG, kMX_ANY, 1, 1);
   if (! mx_tmo) 
   {
     MEX_UTILS->push_error("invalid argin specified",
@@ -2590,7 +2590,7 @@ int TangoBinding::attribute_history (void)
     SET_DEFAULT_PRHS_THEN_RETURN(kError); 
 
   //- get <attribute history depth> from the 4th input arg
-  mxArray * mx_depth = MEX_ARGS->get_input_array(k4TH_ARG, ::mxDOUBLE_CLASS, 1, 1);
+  const mxArray* mx_depth = MEX_ARGS->get_input_array(k4TH_ARG, ::mxDOUBLE_CLASS, 1, 1);
   if (mx_depth == 0) 
   {
     MEX_UTILS->push_error("invalid argin specified",
@@ -2989,7 +2989,7 @@ int TangoBinding::get_attr_config (void)
     SET_DEFAULT_PRHS_THEN_RETURN(kError); 
   }
   //- get attributes list name from the 3rd MEX-file input arg
-  mxArray * attr_list = MEX_ARGS->get_input_array(k3RD_ARG, ::mxCELL_CLASS, 1);
+  const mxArray* attr_list = MEX_ARGS->get_input_array(k3RD_ARG, ::mxCELL_CLASS, 1);
   if (attr_list == 0)
   {
     MEX_UTILS->push_error("invalid argin specified",
@@ -3309,7 +3309,7 @@ int TangoBinding::set_attr_config (void)
     SET_DEFAULT_PRHS_THEN_RETURN(kError); 
 
   //- get attribute-config list from the 3rd MEX-file input arg
-  mxArray * attr_config = MEX_ARGS->get_input_array(k3RD_ARG, ::mxSTRUCT_CLASS, 1);
+  const mxArray* attr_config = MEX_ARGS->get_input_array(k3RD_ARG, ::mxSTRUCT_CLASS, 1);
   if (attr_config == 0)
   {
     MEX_UTILS->push_error("invalid argin specified",
@@ -3755,7 +3755,7 @@ int TangoBinding::black_box (void)
     SET_DEFAULT_PRHS_THEN_RETURN(kError); 
   }
   //- get black-box len from the 3rd MEX-file input arg
-  mxArray * mx_bb_len = MEX_ARGS->get_input_array(k3RD_ARG, ::mxDOUBLE_CLASS, 1, 1);
+  const mxArray* mx_bb_len = MEX_ARGS->get_input_array(k3RD_ARG, ::mxDOUBLE_CLASS, 1, 1);
   if (mx_bb_len == 0)
   {
     MEX_UTILS->push_error("invalid argin specified",
@@ -4025,7 +4025,7 @@ int TangoBinding::set_timeout (void)
     SET_DEFAULT_PRHS_THEN_RETURN(kError); 
   }
   //- get timeout from the 3rd MEX-file input arg
-  mxArray * mx_tmo = MEX_ARGS->get_input_array(k3RD_ARG, ::mxDOUBLE_CLASS, 1, 1);
+  const mxArray* mx_tmo = MEX_ARGS->get_input_array(k3RD_ARG, ::mxDOUBLE_CLASS, 1, 1);
   if (mx_tmo == 0)
   {
     MEX_UTILS->push_error("invalid argin specified",
@@ -4105,7 +4105,7 @@ int TangoBinding::set_source (void)
     SET_DEFAULT_PRHS_THEN_RETURN(kError); 
   }
   //- get source from the 3rd MEX-file input arg
-  mxArray * mx_source = MEX_ARGS->get_input_array(k3RD_ARG);
+  const mxArray* mx_source = MEX_ARGS->get_input_array(k3RD_ARG);
   if (mx_source == 0)
   {
     SET_DEFAULT_PRHS_THEN_RETURN(kError); 
@@ -4439,7 +4439,7 @@ int TangoBinding::poll_command (void)
     SET_DEFAULT_PRHS_THEN_RETURN(kError); 
   }
   //- get polling period from the 4th MEX-file input arg
-  mxArray * mx_pp = MEX_ARGS->get_input_array(k4TH_ARG, ::mxDOUBLE_CLASS, 1, 1);
+  const mxArray* mx_pp = MEX_ARGS->get_input_array(k4TH_ARG, ::mxDOUBLE_CLASS, 1, 1);
   if (mx_pp == 0)
   {
     MEX_UTILS->push_error("invalid argin specified",
@@ -4615,7 +4615,7 @@ int TangoBinding::poll_attribute (void)
     SET_DEFAULT_PRHS_THEN_RETURN(kError); 
   }
   //- get polling period from the 4th MEX-file input arg
-  mxArray * mx_pp = MEX_ARGS->get_input_array(k4TH_ARG, ::mxDOUBLE_CLASS, 1, 1);
+  const mxArray* mx_pp = MEX_ARGS->get_input_array(k4TH_ARG, ::mxDOUBLE_CLASS, 1, 1);
   if (mx_pp == 0)
   {
     MEX_UTILS->push_error("invalid argin specified",
@@ -4777,7 +4777,7 @@ int TangoBinding::get_property (void)
     SET_DEFAULT_PRHS_THEN_RETURN(kError); 
   }
   //- get property name from the 3rd MEX-file input arg
-  mxArray * mx_prop_name = MEX_ARGS->get_input_array(k3RD_ARG, ::mxCHAR_CLASS, 1);
+  const mxArray* mx_prop_name = MEX_ARGS->get_input_array(k3RD_ARG, ::mxCHAR_CLASS, 1);
   if (mx_prop_name == 0)
   {
     MEX_UTILS->push_error("invalid argin specified",
@@ -4880,7 +4880,7 @@ int TangoBinding::get_properties (void)
     SET_DEFAULT_PRHS_THEN_RETURN(kError); 
   }
   //- get property list from the 3rd MEX-file input arg
-  mxArray * prop_list = MEX_ARGS->get_input_array(k3RD_ARG, ::mxCELL_CLASS, 1);
+  const mxArray* prop_list = MEX_ARGS->get_input_array(k3RD_ARG, ::mxCELL_CLASS, 1);
   if (prop_list == 0)
   {
     MEX_UTILS->push_error("invalid argin specified",
@@ -5019,7 +5019,7 @@ int TangoBinding::put_property (void)
     SET_DEFAULT_PRHS_THEN_RETURN(kError); 
   }
   //- get property value from the 4th MEX-file input arg
-  mxArray * prop_values = MEX_ARGS->get_input_array(k4TH_ARG, ::mxCELL_CLASS, 1);
+  const mxArray* prop_values = MEX_ARGS->get_input_array(k4TH_ARG, ::mxCELL_CLASS, 1);
   if (prop_values == 0)
   {
     MEX_UTILS->push_error("invalid argin specified",
@@ -5084,7 +5084,7 @@ int TangoBinding::put_properties (void)
     SET_DEFAULT_PRHS_THEN_RETURN(kError); 
 
   //- get property[name/value] list from the 3rd MEX-file input arg
-  mxArray * prop_list = MEX_ARGS->get_input_array(k3RD_ARG, ::mxSTRUCT_CLASS, 1);
+  const mxArray* prop_list = MEX_ARGS->get_input_array(k3RD_ARG, ::mxSTRUCT_CLASS, 1);
   if (prop_list == 0) 
   {
     MEX_UTILS->push_error("invalid argin specified",
@@ -5245,7 +5245,7 @@ int TangoBinding::del_properties (void)
     SET_DEFAULT_PRHS_THEN_RETURN(kError);
   }
   //- get property list from the 3rd MEX-file input arg
-  mxArray * mx_prop_list = MEX_ARGS->get_input_array(k3RD_ARG, ::mxCELL_CLASS, 1);
+  const mxArray* mx_prop_list = MEX_ARGS->get_input_array(k3RD_ARG, ::mxCELL_CLASS, 1);
   if (mx_prop_list == 0)
   {
     MEX_UTILS->push_error("invalid argin specified",
@@ -5353,7 +5353,7 @@ int TangoBinding::group_create (void)
 int TangoBinding::group_kill (void)
 {
   //- get group id from the 2nd input arg
-  mxArray * mx_grp_id = MEX_ARGS->get_input_array(k2ND_ARG, kMX_ANY, 1, 1);
+  const mxArray* mx_grp_id = MEX_ARGS->get_input_array(k2ND_ARG, kMX_ANY, 1, 1);
   if (mx_grp_id == 0 || ::mxIsNumeric(mx_grp_id) == false)
   {
     MEX_UTILS->set_error("invalid argin specified",
@@ -5398,7 +5398,7 @@ int TangoBinding::group_kill (void)
 int TangoBinding::group_add (void)
 {
   //- get parent group id from the 2nd input arg
-  mxArray * mx_parent_grp_id = MEX_ARGS->get_input_array(k2ND_ARG, kMX_ANY, 1, 1);
+  const mxArray* mx_parent_grp_id = MEX_ARGS->get_input_array(k2ND_ARG, kMX_ANY, 1, 1);
   if (mx_parent_grp_id == 0 || ::mxIsNumeric(mx_parent_grp_id) == false)
   {
     MEX_UTILS->set_error("invalid argin specified",
@@ -5415,7 +5415,7 @@ int TangoBinding::group_add (void)
     SET_DEFAULT_PRHS_THEN_RETURN(kError); 
   }
   //- get child group id or device names from the 3rd input arg
-  mxArray * mx_array = MEX_ARGS->get_input_array(k3RD_ARG);
+  const mxArray* mx_array = MEX_ARGS->get_input_array(k3RD_ARG);
   if (! mx_array)
   {
     MEX_UTILS->set_error("invalid argin specified",
@@ -5511,7 +5511,7 @@ int TangoBinding::group_add (void)
 int TangoBinding::group_remove (void)
 {
   //- get parent group id from the 2nd input arg
-  mxArray * mx_parent_grp_id = MEX_ARGS->get_input_array(k2ND_ARG, kMX_ANY, 1, 1);
+  const mxArray* mx_parent_grp_id = MEX_ARGS->get_input_array(k2ND_ARG, kMX_ANY, 1, 1);
   if (mx_parent_grp_id == 0 || ::mxIsNumeric(mx_parent_grp_id) == false)
   {
     MEX_UTILS->set_error("invalid argin specified",
@@ -5528,7 +5528,7 @@ int TangoBinding::group_remove (void)
     SET_DEFAULT_PRHS_THEN_RETURN(kError); 
   }
   //- get child names or patterns from the 3rd input arg
-  mxArray * mx_array = MEX_ARGS->get_input_array(k3RD_ARG);
+  const mxArray* mx_array = MEX_ARGS->get_input_array(k3RD_ARG);
   if (! mx_array)
   {
     MEX_UTILS->set_error("invalid argin specified",
@@ -5537,7 +5537,7 @@ int TangoBinding::group_remove (void)
     SET_DEFAULT_PRHS_THEN_RETURN(kError); 
   }
   //- get forward option from the 4th input arg
-  mxArray * mx_forward = MEX_ARGS->get_input_array(k4TH_ARG, kMX_ANY, 1, 1);
+  const mxArray* mx_forward = MEX_ARGS->get_input_array(k4TH_ARG, kMX_ANY, 1, 1);
   if (mx_forward == 0 || ::mxIsNumeric(mx_forward) == false)
   {
     MEX_UTILS->set_error("invalid argin specified",
@@ -5589,7 +5589,7 @@ int TangoBinding::group_remove (void)
         if (dp == 0)
         {
           //- cstr is the name of a group
-          Tango::Group * g = parent->get_group(cstr);
+          Tango::Group*  g = parent->get_group(cstr);
           if (g && g != parent)
           {
             GRP_REP->remove(g, false);
@@ -5627,7 +5627,7 @@ int TangoBinding::group_remove (void)
       if (dp == 0)
       {
         //- cstr is the name of a group
-        Tango::Group * g = parent->get_group(cstr);
+        Tango::Group*  g = parent->get_group(cstr);
         if (g && g != parent)
         {
           GRP_REP->remove(g, false);
@@ -5716,7 +5716,7 @@ int TangoBinding::group_id (void)
 int TangoBinding::group_dump (void)
 {
   //- get group id from the 2nd input arg
-  mxArray * mx_grp_id = MEX_ARGS->get_input_array(k2ND_ARG, kMX_ANY, 1, 1);
+  const mxArray* mx_grp_id = MEX_ARGS->get_input_array(k2ND_ARG, kMX_ANY, 1, 1);
   if (mx_grp_id == 0 || ::mxIsNumeric(mx_grp_id) == false)
   {
     MEX_UTILS->set_error("invalid argin specified",
@@ -5745,7 +5745,7 @@ int TangoBinding::group_dump (void)
 int TangoBinding::group_device_list (void)
 {
   //- get group id from the 2nd input arg
-  mxArray * mx_grp_id = MEX_ARGS->get_input_array(k2ND_ARG, kMX_ANY, 1, 1);
+  const mxArray* mx_grp_id = MEX_ARGS->get_input_array(k2ND_ARG, kMX_ANY, 1, 1);
   if (mx_grp_id == 0 || ::mxIsNumeric(mx_grp_id) == false)
   {
     MEX_UTILS->set_error("invalid argin specified",
@@ -5762,7 +5762,7 @@ int TangoBinding::group_device_list (void)
     SET_DEFAULT_PRHS_THEN_RETURN(kError); 
   }
   //- get <forward> option the 3rd input arg
-  mxArray * mx_forward = MEX_ARGS->get_input_array(k3RD_ARG, kMX_ANY, 1, 1);
+  const mxArray* mx_forward = MEX_ARGS->get_input_array(k3RD_ARG, kMX_ANY, 1, 1);
   if (mx_forward == 0 || ::mxIsNumeric(mx_forward) == false)
   {
     std::string r = "could not obtain size of group " + g->get_name();
@@ -5803,7 +5803,7 @@ int TangoBinding::group_device_list (void)
 int TangoBinding::group_size (void)
 {
   //- get group id from the 2nd input arg
-  mxArray * mx_grp_id = MEX_ARGS->get_input_array(k2ND_ARG, kMX_ANY, 1, 1);
+  const mxArray* mx_grp_id = MEX_ARGS->get_input_array(k2ND_ARG, kMX_ANY, 1, 1);
   if (mx_grp_id == 0 || ::mxIsNumeric(mx_grp_id) == false)
   {
     MEX_UTILS->set_error("invalid argin specified",
@@ -5820,7 +5820,7 @@ int TangoBinding::group_size (void)
     SET_DEFAULT_PRHS_THEN_RETURN(kError); 
   }
   //- get <forward> option the 3rd input arg
-  mxArray * mx_forward = MEX_ARGS->get_input_array(k3RD_ARG, kMX_ANY, 1, 1);
+  const mxArray* mx_forward = MEX_ARGS->get_input_array(k3RD_ARG, kMX_ANY, 1, 1);
   if (mx_forward == 0 || ::mxIsNumeric(mx_forward) == false)
   {
     std::string r = "could not obtain size of group " + g->get_name();
@@ -5856,7 +5856,7 @@ int TangoBinding::group_size (void)
 int TangoBinding::group_ping (void)
 {
   //- get group id from the 2nd input arg
-  mxArray * mx_grp_id = MEX_ARGS->get_input_array(k2ND_ARG, kMX_ANY, 1, 1);
+  const mxArray* mx_grp_id = MEX_ARGS->get_input_array(k2ND_ARG, kMX_ANY, 1, 1);
   if (mx_grp_id == 0 || ::mxIsNumeric(mx_grp_id) == false)
   {
     MEX_UTILS->set_error("invalid argin specified",
@@ -5873,7 +5873,7 @@ int TangoBinding::group_ping (void)
     SET_DEFAULT_PRHS_THEN_RETURN(kError); 
   }
   //- get <forward> option the 3rd input arg
-  mxArray * mx_forward = MEX_ARGS->get_input_array(k3RD_ARG, kMX_ANY, 1, 1);
+  const mxArray* mx_forward = MEX_ARGS->get_input_array(k3RD_ARG, kMX_ANY, 1, 1);
   if (mx_forward == 0 || ::mxIsNumeric(mx_forward) == false)
   {
     std::string r = "could not ping group " + g->get_name();
@@ -5909,7 +5909,7 @@ int TangoBinding::group_ping (void)
 int TangoBinding::group_set_timeout_msecs (void)
 {
   //- get group id from the 2nd input arg
-  mxArray * mx_grp_id = MEX_ARGS->get_input_array(k2ND_ARG, kMX_ANY, 1, 1);
+  const mxArray* mx_grp_id = MEX_ARGS->get_input_array(k2ND_ARG, kMX_ANY, 1, 1);
   if (mx_grp_id == 0 || ::mxIsNumeric(mx_grp_id) == false)
   {
     MEX_UTILS->set_error("invalid argin specified",
@@ -5926,7 +5926,7 @@ int TangoBinding::group_set_timeout_msecs (void)
     SET_DEFAULT_PRHS_THEN_RETURN(kError); 
   }
   //- get <forward> option the 3rd input arg
-  mxArray * mx_tmo = MEX_ARGS->get_input_array(k3RD_ARG, kMX_ANY, 1, 1);
+  const mxArray* mx_tmo = MEX_ARGS->get_input_array(k3RD_ARG, kMX_ANY, 1, 1);
   if (mx_tmo == 0 || ::mxIsNumeric(mx_tmo) == false)
   {
     std::string r = "could not set timeout on group " + g->get_name();
@@ -5947,7 +5947,7 @@ int TangoBinding::group_set_timeout_msecs (void)
 int TangoBinding::group_contains (void) 
 {
   //- get group id from the 2nd input arg
-  mxArray * mx_grp_id = MEX_ARGS->get_input_array(k2ND_ARG, kMX_ANY, 1, 1);
+  const mxArray* mx_grp_id = MEX_ARGS->get_input_array(k2ND_ARG, kMX_ANY, 1, 1);
   if (mx_grp_id == 0 || ::mxIsNumeric(mx_grp_id) == false)
   {
     MEX_UTILS->set_error("invalid argin specified",
@@ -5970,7 +5970,7 @@ int TangoBinding::group_contains (void)
     SET_DEFAULT_PRHS_THEN_RETURN(kError);
   }
   //- get <forward> option from 4th input arg
-  mxArray * mx_forward = MEX_ARGS->get_input_array(k4TH_ARG, kMX_ANY, 1, 1);
+  const mxArray* mx_forward = MEX_ARGS->get_input_array(k4TH_ARG, kMX_ANY, 1, 1);
   if (mx_forward == 0 || ::mxIsNumeric(mx_forward) == false)
   {
     std::string r = "could not ping group " + g->get_name();
@@ -6005,7 +6005,7 @@ int TangoBinding::group_contains (void)
 int TangoBinding::group_command_inout_asynch (void)
 {
   //- get group id from the 2nd input arg
-  mxArray * mx_grp_id = MEX_ARGS->get_input_array(k2ND_ARG, kMX_ANY, 1, 1);
+  const mxArray* mx_grp_id = MEX_ARGS->get_input_array(k2ND_ARG, kMX_ANY, 1, 1);
   if (mx_grp_id == 0 || ::mxIsNumeric(mx_grp_id) == false) 
   {
     MEX_UTILS->set_error("invalid argin specified",
@@ -6031,7 +6031,7 @@ int TangoBinding::group_command_inout_asynch (void)
     SET_DEFAULT_PRHS_THEN_RETURN(kError); 
   }
   //- get "forget" option the 4th input arg
-  mxArray * mx_forget = MEX_ARGS->get_input_array(k4TH_ARG, kMX_ANY, 1, 1);
+  const mxArray* mx_forget = MEX_ARGS->get_input_array(k4TH_ARG, kMX_ANY, 1, 1);
   if (mx_forget == 0 || ::mxIsNumeric(mx_forget) == false) 
   {
     std::string r = "failed to execute " + cmd + " on group " + g->get_name();
@@ -6042,7 +6042,7 @@ int TangoBinding::group_command_inout_asynch (void)
   }
   bool forget = ::mxGetPr(mx_forget)[0] ? true : false;
   //- get <forward> option the 5th input arg
-  mxArray * mx_forward = MEX_ARGS->get_input_array(k5TH_ARG, kMX_ANY, 1, 1);
+  const mxArray* mx_forward = MEX_ARGS->get_input_array(k5TH_ARG, kMX_ANY, 1, 1);
   if (mx_forward == 0 || ::mxIsNumeric(mx_forward) == false) 
   {
     std::string r = "failed to execute " + cmd + " on group " + g->get_name();
@@ -6116,7 +6116,7 @@ int TangoBinding::group_command_inout_asynch (void)
   if (arg_in_type != Tango::DEV_VOID) 
   {
     //- get <argin> from the 6th input arg
-    mxArray * arg_in = MEX_ARGS->get_input_array(k6TH_ARG);
+    const mxArray* arg_in = MEX_ARGS->get_input_array(k6TH_ARG);
     if (arg_in == 0) 
     {
       std::string r = "failed to execute " + cmd + " on group " + g->get_name();
@@ -6264,7 +6264,7 @@ int TangoBinding::group_command_inout_asynch (void)
 int TangoBinding::group_command_inout_reply (void)
 {
   //- get request descriptor from 2nd input arg
-  mxArray * mx_rdesc = MEX_ARGS->get_input_array(k2ND_ARG, ::mxSTRUCT_CLASS, 1, 1);
+  const mxArray* mx_rdesc = MEX_ARGS->get_input_array(k2ND_ARG, ::mxSTRUCT_CLASS, 1, 1);
   if (mx_rdesc == 0)
   {
     MEX_UTILS->push_error("invalid request descriptor specified",
@@ -6357,7 +6357,7 @@ int TangoBinding::group_command_inout_reply (void)
   //- extract dev_name string from mxArray
   Tango::DevLong req_id = reinterpret_cast<Tango::DevLong*>(::mxGetPr(mx_array))[0];
   //- get <timeout> option from the 3rd input arg
-  mxArray * mx_tmo = MEX_ARGS->get_input_array(k3RD_ARG, kMX_ANY, 1, 1);
+  const mxArray* mx_tmo = MEX_ARGS->get_input_array(k3RD_ARG, kMX_ANY, 1, 1);
   if (mx_tmo == 0) 
   {
     MEX_UTILS->push_error("invalid argin specified",
@@ -6367,7 +6367,7 @@ int TangoBinding::group_command_inout_reply (void)
   } 
   Tango::DevLong tmo = (Tango::DevLong)::mxGetPr(mx_tmo)[0];
   //- get group reference
-  Tango::Group * g = GRP_REP->get(grp_id);
+  Tango::Group*  g = GRP_REP->get(grp_id);
   if (g == 0) 
   {
     MEX_UTILS->push_error("failed to execute group_command_inout_reply",
@@ -6526,11 +6526,11 @@ int TangoBinding::group_command_inout_reply (void)
 //=============================================================================
 //- TangoBinding::group_command_inout_asynch_specific_scalar
 //=============================================================================
-Tango::DevLong TangoBinding::group_command_inout_asynch_specific_scalar (Tango::Group * g, 
+Tango::DevLong TangoBinding::group_command_inout_asynch_specific_scalar (Tango::Group*  g, 
                                                                          const std::string& cmd,
                                                                          bool forget, 
                                                                          bool forward, 
-                                                                         mxArray * mx_array) 
+                                                                         const mxArray* mx_array) 
 {
   Tango::DevLong req_id = kError;
 
@@ -6543,8 +6543,7 @@ Tango::DevLong TangoBinding::group_command_inout_asynch_specific_scalar (Tango::
       case mxDOUBLE_CLASS:
         {
           double dummy;
-          std::vector<double>* v
-              = DATA_ADAPTER->mxarray_to_vector(mx_array, dummy);
+          std::vector<double>* v = DATA_ADAPTER->mxarray_to_vector(mx_array, dummy);
           _TRY_DELETE (req_id = g->command_inout_asynch(cmd, *v, forget, forward),
                        g->get_name(),
                        "group_command_inout_asynch",
@@ -6555,8 +6554,7 @@ Tango::DevLong TangoBinding::group_command_inout_asynch_specific_scalar (Tango::
       case mxSINGLE_CLASS:
         {
           float dummy;
-          std::vector<float>* v 
-              = DATA_ADAPTER->mxarray_to_vector(mx_array, dummy);
+          std::vector<float>* v = DATA_ADAPTER->mxarray_to_vector(mx_array, dummy);
           _TRY_DELETE (req_id = g->command_inout_asynch(cmd, *v, forget, forward), 
                        g->get_name(), 
                        "group_command_inout_asynch",
@@ -6567,8 +6565,7 @@ Tango::DevLong TangoBinding::group_command_inout_asynch_specific_scalar (Tango::
       case mxUINT8_CLASS:
         {
           bool dummy;
-          std::vector<bool>* v 
-              = DATA_ADAPTER->mxarray_to_vector(mx_array, dummy);
+          std::vector<bool>* v = DATA_ADAPTER->mxarray_to_vector(mx_array, dummy);
           _TRY_DELETE (req_id = g->command_inout_asynch(cmd, *v, forget, forward), 
                        g->get_name(), 
                        "group_command_inout_asynch",
@@ -6579,8 +6576,7 @@ Tango::DevLong TangoBinding::group_command_inout_asynch_specific_scalar (Tango::
       case mxINT16_CLASS:
         {
           short dummy;
-          std::vector<short>* v 
-              = DATA_ADAPTER->mxarray_to_vector(mx_array, dummy);
+          std::vector<short>* v = DATA_ADAPTER->mxarray_to_vector(mx_array, dummy);
           _TRY_DELETE (req_id = g->command_inout_asynch(cmd, *v, forget, forward), 
                        g->get_name(), 
                        "group_command_inout_asynch",
@@ -6591,8 +6587,7 @@ Tango::DevLong TangoBinding::group_command_inout_asynch_specific_scalar (Tango::
       case mxUINT16_CLASS:
         {
           unsigned short dummy;
-          std::vector<unsigned short>* v 
-              = DATA_ADAPTER->mxarray_to_vector(mx_array, dummy);
+          std::vector<unsigned short>* v = DATA_ADAPTER->mxarray_to_vector(mx_array, dummy);
           _TRY_DELETE (req_id = g->command_inout_asynch(cmd, *v, forget, forward), 
                        g->get_name(), 
                        "group_command_inout_asynch",
@@ -6603,8 +6598,7 @@ Tango::DevLong TangoBinding::group_command_inout_asynch_specific_scalar (Tango::
       case mxINT32_CLASS:
         {
           Tango::DevLong dummy;
-          std::vector<Tango::DevLong>* v 
-              = DATA_ADAPTER->mxarray_to_vector(mx_array, dummy);
+          std::vector<Tango::DevLong>* v = DATA_ADAPTER->mxarray_to_vector(mx_array, dummy);
           _TRY_DELETE (req_id = g->command_inout_asynch(cmd, *v, forget, forward), 
                        g->get_name(), 
                        "group_command_inout_asynch",
@@ -6615,8 +6609,7 @@ Tango::DevLong TangoBinding::group_command_inout_asynch_specific_scalar (Tango::
       case mxUINT32_CLASS:
         {
           Tango::DevULong dummy;
-          std::vector<Tango::DevULong>* v 
-              = DATA_ADAPTER->mxarray_to_vector(mx_array, dummy);
+          std::vector<Tango::DevULong>* v = DATA_ADAPTER->mxarray_to_vector(mx_array, dummy);
           _TRY_DELETE (req_id = g->command_inout_asynch(cmd, *v, forget, forward), 
                        g->get_name(), 
                        "group_command_inout_asynch",
@@ -6628,8 +6621,7 @@ Tango::DevLong TangoBinding::group_command_inout_asynch_specific_scalar (Tango::
       case mxINT64_CLASS:
         {
           Tango::DevLong64 dummy;
-          std::vector<Tango::DevLong64>* v 
-               = DATA_ADAPTER->mxarray_to_vector(mx_array, dummy);
+          std::vector<Tango::DevLong64>* v = DATA_ADAPTER->mxarray_to_vector(mx_array, dummy);
           _TRY_DELETE (req_id = g->command_inout_asynch(cmd, *v, forget, forward), 
                        g->get_name(), 
                        "group_command_inout_asynch",
@@ -6640,8 +6632,7 @@ Tango::DevLong TangoBinding::group_command_inout_asynch_specific_scalar (Tango::
       case mxUINT64_CLASS:
         {
           Tango::DevULong64 dummy;
-          std::vector<Tango::DevULong64>* v 
-              = DATA_ADAPTER->mxarray_to_vector(mx_array, dummy);
+          std::vector<Tango::DevULong64>* v = DATA_ADAPTER->mxarray_to_vector(mx_array, dummy);
           _TRY_DELETE (req_id = g->command_inout_asynch(cmd, *v, forget, forward), 
                        g->get_name(), 
                        "group_command_inout_asynch",
@@ -6660,8 +6651,7 @@ Tango::DevLong TangoBinding::group_command_inout_asynch_specific_scalar (Tango::
   }
   else if (MEX_UTILS->is_array_of_string(mx_array)) 
   {
-    std::vector<std::string>* v 
-          = DATA_ADAPTER->mxarray_to_vector_of_string(mx_array);
+    std::vector<std::string>* v = DATA_ADAPTER->mxarray_to_vector_of_string(mx_array);
     _TRY_DELETE (req_id = g->command_inout_asynch(cmd, *v, forget, forward), 
                  g->get_name(), 
                  "group_command_inout_asynch",
@@ -6674,8 +6664,7 @@ Tango::DevLong TangoBinding::group_command_inout_asynch_specific_scalar (Tango::
     {
       case mxINT32_CLASS:
         {
-          std::vector<Tango::DevVarLongStringArray*>* v
-                = DATA_ADAPTER->mxarray_to_vector_of_dvlsa(mx_array);
+          std::vector<Tango::DevVarLongStringArray*>* v = DATA_ADAPTER->mxarray_to_vector_of_dvlsa(mx_array);
           _TRY_DELETE (req_id = g->command_inout_asynch(cmd, *v, forget, forward), 
                        g->get_name(), 
                        "group_command_inout_asynch",
@@ -6685,8 +6674,7 @@ Tango::DevLong TangoBinding::group_command_inout_asynch_specific_scalar (Tango::
         break;
       case mxDOUBLE_CLASS:
         {
-          std::vector<Tango::DevVarDoubleStringArray*>* v
-                = DATA_ADAPTER->mxarray_to_vector_of_dvdsa(mx_array);
+          std::vector<Tango::DevVarDoubleStringArray*>* v = DATA_ADAPTER->mxarray_to_vector_of_dvdsa(mx_array);
           _TRY_DELETE (req_id = g->command_inout_asynch(cmd, *v, forget, forward), 
                        g->get_name(), 
                        "group_command_inout_asynch",
@@ -6716,18 +6704,17 @@ Tango::DevLong TangoBinding::group_command_inout_asynch_specific_scalar (Tango::
 //=============================================================================
 //- TangoBinding::group_command_inout_asynch_specific_vector
 //=============================================================================
-Tango::DevLong TangoBinding::group_command_inout_asynch_specific_vector (Tango::Group *g, 
-                                                               const std::string& cmd,
-                                                               bool forget,
-                                                               bool forward,
-                                                               mxArray * mx_array) 
-{
+Tango::DevLong TangoBinding::group_command_inout_asynch_specific_vector (Tango::Group* g, 
+                                                                         const std::string& cmd,
+                                                                         bool forget,
+                                                                         bool forward,
+                                                                         const mxArray* mx_array)
+  {
   Tango::DevLong req_id = kError;
   ::mxClassID class_id = ::mxUNKNOWN_CLASS;
   if (MEX_UTILS->is_array_of_array_of_string(mx_array)) 
   {
-    std::vector<std::vector<std::string> >* v 
-          = DATA_ADAPTER->mxarray_to_vector_of_vector_of_string(mx_array);
+    std::vector<std::vector<std::string> >* v = DATA_ADAPTER->mxarray_to_vector_of_vector_of_string(mx_array);
     _TRY_DELETE (req_id = g->command_inout_asynch(cmd, *v, forget, forward), 
                  g->get_name(), 
                  "group_command_inout_asynch",
@@ -6741,8 +6728,7 @@ Tango::DevLong TangoBinding::group_command_inout_asynch_specific_vector (Tango::
       case mxDOUBLE_CLASS:
         {
           double dummy;
-          std::vector<std::vector<double> >* v 
-              = DATA_ADAPTER->mxarray_to_vector_of_vector(mx_array, dummy);
+          std::vector<std::vector<double> >* v = DATA_ADAPTER->mxarray_to_vector_of_vector(mx_array, dummy);
           _TRY_DELETE (req_id = g->command_inout_asynch(cmd, *v, forget, forward), 
                        g->get_name(), 
                        "group_command_inout_asynch",
@@ -6753,8 +6739,7 @@ Tango::DevLong TangoBinding::group_command_inout_asynch_specific_vector (Tango::
       case mxSINGLE_CLASS:
         {
           float dummy;
-          std::vector<std::vector<float> >* v 
-              = DATA_ADAPTER->mxarray_to_vector_of_vector(mx_array, dummy);
+          std::vector<std::vector<float> >* v = DATA_ADAPTER->mxarray_to_vector_of_vector(mx_array, dummy);
           _TRY_DELETE (req_id = g->command_inout_asynch(cmd, *v, forget, forward), 
                        g->get_name(), 
                        "group_command_inout_asynch",
@@ -6766,8 +6751,7 @@ Tango::DevLong TangoBinding::group_command_inout_asynch_specific_vector (Tango::
       case mxUINT8_CLASS:
         {
           unsigned char dummy;
-          std::vector<std::vector<unsigned char> >* v 
-              = DATA_ADAPTER->mxarray_to_vector_of_vector(mx_array, dummy);
+          std::vector<std::vector<unsigned char> >* v = DATA_ADAPTER->mxarray_to_vector_of_vector(mx_array, dummy);
           _TRY_DELETE (req_id = g->command_inout_asynch(cmd, *v, forget, forward), 
                        g->get_name(), 
                        "group_command_inout_asynch",
@@ -6778,8 +6762,7 @@ Tango::DevLong TangoBinding::group_command_inout_asynch_specific_vector (Tango::
       case mxINT16_CLASS:
         {
           short dummy;
-          std::vector<std::vector<short> >* v 
-              = DATA_ADAPTER->mxarray_to_vector_of_vector(mx_array, dummy);
+          std::vector<std::vector<short> >* v = DATA_ADAPTER->mxarray_to_vector_of_vector(mx_array, dummy);
           _TRY_DELETE (req_id = g->command_inout_asynch(cmd, *v, forget, forward), 
                        g->get_name(), 
                        "group_command_inout_asynch",
@@ -6790,8 +6773,7 @@ Tango::DevLong TangoBinding::group_command_inout_asynch_specific_vector (Tango::
       case mxUINT16_CLASS:
         {
           unsigned short dummy;
-          std::vector<std::vector<unsigned short> >* v 
-              = DATA_ADAPTER->mxarray_to_vector_of_vector(mx_array, dummy);
+          std::vector<std::vector<unsigned short> >* v = DATA_ADAPTER->mxarray_to_vector_of_vector(mx_array, dummy);
           _TRY_DELETE (req_id = g->command_inout_asynch(cmd, *v, forget, forward), 
                        g->get_name(), 
                        "group_command_inout_asynch",
@@ -6802,8 +6784,7 @@ Tango::DevLong TangoBinding::group_command_inout_asynch_specific_vector (Tango::
       case mxINT32_CLASS:
         {
           Tango::DevLong dummy;
-          std::vector<std::vector<Tango::DevLong> >* v 
-              = DATA_ADAPTER->mxarray_to_vector_of_vector(mx_array, dummy);
+          std::vector<std::vector<Tango::DevLong> >* v = DATA_ADAPTER->mxarray_to_vector_of_vector(mx_array, dummy);
           _TRY_DELETE (req_id = g->command_inout_asynch(cmd, *v, forget, forward), 
                        g->get_name(), 
                        "group_command_inout_asynch",
@@ -6814,8 +6795,7 @@ Tango::DevLong TangoBinding::group_command_inout_asynch_specific_vector (Tango::
       case mxUINT32_CLASS:
         {
           Tango::DevLong dummy;
-          std::vector<std::vector<Tango::DevLong> >* v 
-              = DATA_ADAPTER->mxarray_to_vector_of_vector(mx_array, dummy);
+          std::vector<std::vector<Tango::DevLong> >* v = DATA_ADAPTER->mxarray_to_vector_of_vector(mx_array, dummy);
           _TRY_DELETE (req_id = g->command_inout_asynch(cmd, *v, forget, forward), 
                        g->get_name(), 
                        "group_command_inout_asynch",
@@ -6827,8 +6807,7 @@ Tango::DevLong TangoBinding::group_command_inout_asynch_specific_vector (Tango::
         case mxINT64_CLASS:
         {
           Tango::DevLong64 dummy;
-          std::vector<std::vector<Tango::DevLong64> >* v
-              = DATA_ADAPTER->mxarray_to_vector_of_vector(mx_array, dummy);
+          std::vector<std::vector<Tango::DevLong64> >* v = DATA_ADAPTER->mxarray_to_vector_of_vector(mx_array, dummy);
           _TRY_DELETE (req_id = g->command_inout_asynch(cmd, *v, forget, forward), 
                        g->get_name(), 
                        "group_command_inout_asynch",
@@ -6839,8 +6818,7 @@ Tango::DevLong TangoBinding::group_command_inout_asynch_specific_vector (Tango::
         case mxUINT64_CLASS:
         {
           Tango::DevULong64 dummy;
-          std::vector<std::vector<Tango::DevULong64> >* v 
-              = DATA_ADAPTER->mxarray_to_vector_of_vector(mx_array, dummy);
+          std::vector<std::vector<Tango::DevULong64> >* v = DATA_ADAPTER->mxarray_to_vector_of_vector(mx_array, dummy);
           _TRY_DELETE (req_id = g->command_inout_asynch(cmd, *v, forget, forward), 
                        g->get_name(), 
                        "group_command_inout_asynch",
@@ -6874,7 +6852,7 @@ Tango::DevLong TangoBinding::group_command_inout_asynch_specific_vector (Tango::
 int TangoBinding::group_write_attribute_asynch (void)
 {
   //- get group id from the 2nd input arg
-  mxArray * mx_grp_id = MEX_ARGS->get_input_array(k2ND_ARG, kMX_ANY, 1, 1);
+  const mxArray* mx_grp_id = MEX_ARGS->get_input_array(k2ND_ARG, kMX_ANY, 1, 1);
   if (mx_grp_id == 0 || ::mxIsNumeric(mx_grp_id) == false)
   {
     MEX_UTILS->set_error("invalid argin specified",
@@ -6900,7 +6878,7 @@ int TangoBinding::group_write_attribute_asynch (void)
     SET_DEFAULT_PRHS_THEN_RETURN(kError); 
   }
   //- get <forward> option the 4th input arg
-  mxArray * mx_forward = MEX_ARGS->get_input_array(k4TH_ARG, kMX_ANY, 1, 1);
+  const mxArray* mx_forward = MEX_ARGS->get_input_array(k4TH_ARG, kMX_ANY, 1, 1);
   if (mx_forward == 0 || ::mxIsNumeric(mx_forward) == false)
   {
     std::string r = "failed to write attribute " + attr + " on group " + g->get_name();
@@ -6971,7 +6949,7 @@ int TangoBinding::group_write_attribute_asynch (void)
     SET_DEFAULT_PRHS_THEN_RETURN(kError); 
   }
   //- get value to write from the 5th MEX-file input arg
-  mxArray * mx_value = MEX_ARGS->get_input_array(k5TH_ARG);
+  const mxArray* mx_value = MEX_ARGS->get_input_array(k5TH_ARG);
   if (mx_value == 0)
   {
     std::string r = "failed to write attribute <" + attr + "> on group " + g->get_name();
@@ -7084,10 +7062,10 @@ int TangoBinding::group_write_attribute_asynch (void)
 //=============================================================================
 //- TangoBinding::group_write_attr_asynch_specific_scalar
 //=============================================================================
-Tango::DevLong TangoBinding::group_write_attr_asynch_specific_scalar (Tango::Group *g, 
+Tango::DevLong TangoBinding::group_write_attr_asynch_specific_scalar (Tango::Group* g, 
                                                             const std::string& attr,
                                                             bool forward,
-                                                            mxArray * mx_array) 
+                                                            const mxArray* mx_array)
 {
   Tango::DevLong req_id = kError;
   ::mxClassID class_id = ::mxUNKNOWN_CLASS;
@@ -7165,7 +7143,7 @@ Tango::DevLong TangoBinding::group_write_attr_asynch_specific_scalar (Tango::Gro
 int TangoBinding::group_write_attribute_reply (void)
 {
   //- get request descriptor from 2nd input arg
-  mxArray * mx_rdesc = MEX_ARGS->get_input_array(k2ND_ARG, ::mxSTRUCT_CLASS, 1, 1);
+  const mxArray* mx_rdesc = MEX_ARGS->get_input_array(k2ND_ARG, ::mxSTRUCT_CLASS, 1, 1);
   if (mx_rdesc == 0)
   {
     MEX_UTILS->set_error("invalid request descriptor specified",
@@ -7258,7 +7236,7 @@ int TangoBinding::group_write_attribute_reply (void)
   //- extract dev_name string from mxArray
   Tango::DevLong req_id = reinterpret_cast<Tango::DevLong*>(::mxGetPr(mx_array))[0];
   //- get <timeout> option from the 3rd input arg
-  mxArray * mx_tmo = MEX_ARGS->get_input_array(k3RD_ARG, kMX_ANY, 1, 1);
+  const mxArray* mx_tmo = MEX_ARGS->get_input_array(k3RD_ARG, kMX_ANY, 1, 1);
   if (mx_tmo == 0)
   {
     MEX_UTILS->push_error("invalid argin specified",
@@ -7268,7 +7246,7 @@ int TangoBinding::group_write_attribute_reply (void)
   }
   Tango::DevLong tmo = (Tango::DevLong)::mxGetPr(mx_tmo)[0];
   //- get group reference
-  Tango::Group * g = GRP_REP->get(grp_id);
+  Tango::Group*  g = GRP_REP->get(grp_id);
   if (g == 0)
   {
     MEX_UTILS->push_error("failed to execute group_write_attribute_reply",
@@ -7398,7 +7376,7 @@ int TangoBinding::group_write_attribute_reply (void)
 int TangoBinding::group_read_attribute_asynch (void)
 {
   //- get group id from the 2nd input arg
-  mxArray * mx_grp_id = MEX_ARGS->get_input_array(k2ND_ARG, kMX_ANY, 1, 1);
+  const mxArray* mx_grp_id = MEX_ARGS->get_input_array(k2ND_ARG, kMX_ANY, 1, 1);
   if (mx_grp_id == 0 || ::mxIsNumeric(mx_grp_id) == false)
   {
     MEX_UTILS->set_error("invalid argin specified",
@@ -7424,7 +7402,7 @@ int TangoBinding::group_read_attribute_asynch (void)
     SET_DEFAULT_PRHS_THEN_RETURN(kError); 
   }
   //- get <forward> option the 4th input arg
-  mxArray * mx_forward = MEX_ARGS->get_input_array(k4TH_ARG, kMX_ANY, 1, 1);
+  const mxArray* mx_forward = MEX_ARGS->get_input_array(k4TH_ARG, kMX_ANY, 1, 1);
   if (mx_forward == 0 || ::mxIsNumeric(mx_forward) == false)
   {
     std::string r = "failed to read attribute " + attr + " on group " + g->get_name();
@@ -7561,7 +7539,7 @@ int TangoBinding::group_read_attribute_asynch (void)
 int TangoBinding::group_read_attribute_reply (void)
 {
   //- get request descriptor from 2nd input arg
-  mxArray * mx_rdesc = MEX_ARGS->get_input_array(k2ND_ARG, ::mxSTRUCT_CLASS, 1, 1);
+  const mxArray* mx_rdesc = MEX_ARGS->get_input_array(k2ND_ARG, ::mxSTRUCT_CLASS, 1, 1);
   if (mx_rdesc == 0)
   {
     MEX_UTILS->push_error("invalid request descriptor specified",
@@ -7654,7 +7632,7 @@ int TangoBinding::group_read_attribute_reply (void)
   //- extract request ID from mxArray
   Tango::DevLong req_id = reinterpret_cast<Tango::DevLong*>(::mxGetPr(mx_array))[0];
   //- get <timeout> option from the 3rd input arg
-  mxArray * mx_tmo = MEX_ARGS->get_input_array(k3RD_ARG, kMX_ANY, 1, 1);
+  const mxArray* mx_tmo = MEX_ARGS->get_input_array(k3RD_ARG, kMX_ANY, 1, 1);
   if (mx_tmo == 0)
   {
     MEX_UTILS->push_error("invalid argin specified",
@@ -7664,7 +7642,7 @@ int TangoBinding::group_read_attribute_reply (void)
   }
   Tango::DevLong tmo = (Tango::DevLong)::mxGetPr(mx_tmo)[0];
   //- get group reference
-  Tango::Group * g = GRP_REP->get(grp_id);
+  Tango::Group*  g = GRP_REP->get(grp_id);
   if (g == 0)
   {
     MEX_UTILS->push_error("failed to execute group_read_attribute_reply",
@@ -7758,7 +7736,7 @@ int TangoBinding::group_read_attribute_reply (void)
 int TangoBinding::group_read_attributes_asynch (void)
 {
   //- get group id from the 2nd input arg
-  mxArray * mx_grp_id = MEX_ARGS->get_input_array(k2ND_ARG, kMX_ANY, 1, 1);
+  const mxArray* mx_grp_id = MEX_ARGS->get_input_array(k2ND_ARG, kMX_ANY, 1, 1);
   if (mx_grp_id == 0 || ::mxIsNumeric(mx_grp_id) == false)
   {
     MEX_UTILS->set_error("invalid argin specified",
@@ -7776,7 +7754,7 @@ int TangoBinding::group_read_attributes_asynch (void)
     SET_DEFAULT_PRHS_THEN_RETURN(kError); 
 
   //- get attributes list name from the 3rd MEX-file input arg
-  mxArray * attr_list = MEX_ARGS->get_input_array(k3RD_ARG, ::mxCELL_CLASS, 1);
+  const mxArray* attr_list = MEX_ARGS->get_input_array(k3RD_ARG, ::mxCELL_CLASS, 1);
   if (attr_list == 0) 
   {
     MEX_UTILS->push_error("invalid argin specified",
@@ -7786,7 +7764,7 @@ int TangoBinding::group_read_attributes_asynch (void)
   }
 
   //- get <forward> option the 4th input arg
-  mxArray * mx_forward = MEX_ARGS->get_input_array(k4TH_ARG, kMX_ANY, 1, 1);
+  const mxArray* mx_forward = MEX_ARGS->get_input_array(k4TH_ARG, kMX_ANY, 1, 1);
   if (mx_forward == 0 || ::mxIsNumeric(mx_forward) == false) 
   {
     std::string r = "failed to read attributes on group " + g->get_name();
@@ -8007,7 +7985,7 @@ int TangoBinding::group_read_attributes_asynch (void)
 int TangoBinding::group_read_attributes_reply (void)
 {
   //- get request descriptor from 2nd input arg
-  mxArray * mx_rdesc = MEX_ARGS->get_input_array(k2ND_ARG, ::mxSTRUCT_CLASS, 1, 1);
+  const mxArray* mx_rdesc = MEX_ARGS->get_input_array(k2ND_ARG, ::mxSTRUCT_CLASS, 1, 1);
   if (! mx_rdesc) 
   {
     MEX_UTILS->push_error("invalid request descriptor specified",
@@ -8145,7 +8123,7 @@ int TangoBinding::group_read_attributes_reply (void)
   Tango::DevLong req_id = reinterpret_cast<Tango::DevLong*>(::mxGetPr(mx_array))[0];
 
   //- get <timeout> option from the 3rd input arg
-  mxArray * mx_tmo = MEX_ARGS->get_input_array(k3RD_ARG, kMX_ANY, 1, 1);
+  const mxArray* mx_tmo = MEX_ARGS->get_input_array(k3RD_ARG, kMX_ANY, 1, 1);
   if (! mx_tmo) 
   {
     MEX_UTILS->push_error("invalid argin specified",
@@ -8158,7 +8136,7 @@ int TangoBinding::group_read_attributes_reply (void)
   Tango::DevLong tmo = (Tango::DevLong)::mxGetPr(mx_tmo)[0];
 
   //- get group reference
-  Tango::Group * g = GRP_REP->get(grp_id);
+  Tango::Group*  g = GRP_REP->get(grp_id);
   if (g == 0) 
   {
     MEX_UTILS->push_error("failed to execute group_read_attributes_reply",
@@ -8257,7 +8235,7 @@ int TangoBinding::group_read_attributes_reply (void)
 
       //- set dev_replies.is_enabled field to its default value
       mx_array = ::mxCreateDoubleScalar(1);
-      if (mx_array == 0) 
+      if (! mx_array) 
       {
         MEX_UTILS->set_error("out of memory",
                              "mxCreateString failed",
@@ -8270,7 +8248,7 @@ int TangoBinding::group_read_attributes_reply (void)
 
       //- set dev_replies.has_failed field to its default value
       mx_array = ::mxCreateDoubleScalar(0);
-      if (mx_array == 0) 
+      if (! mx_array) 
       {
         MEX_UTILS->set_error("out of memory",
                              "mxCreateString failed",
@@ -8335,7 +8313,7 @@ int TangoBinding::group_read_attributes_reply (void)
 int TangoBinding::group_enable_device (void) 
 {
   //- get group id from the 2nd input arg
-  mxArray * mx_grp_id = MEX_ARGS->get_input_array(k2ND_ARG, kMX_ANY, 1, 1);
+  const mxArray* mx_grp_id = MEX_ARGS->get_input_array(k2ND_ARG, kMX_ANY, 1, 1);
   if (mx_grp_id == 0 || ::mxIsNumeric(mx_grp_id) == false) 
   {
     MEX_UTILS->set_error("invalid argin specified",
@@ -8362,7 +8340,7 @@ int TangoBinding::group_enable_device (void)
   }
 
   //- get <forward> option from 4th input arg
-  mxArray * mx_forward = MEX_ARGS->get_input_array(k4TH_ARG, kMX_ANY, 1, 1);
+  const mxArray* mx_forward = MEX_ARGS->get_input_array(k4TH_ARG, kMX_ANY, 1, 1);
   if (mx_forward == 0 || ::mxIsNumeric(mx_forward) == false) 
   {
     std::string r = "could not ping group " + g->get_name();
@@ -8404,7 +8382,7 @@ int TangoBinding::group_enable_device (void)
 int TangoBinding::group_disable_device (void) 
 {
   //- get group id from the 2nd input arg
-  mxArray * mx_grp_id = MEX_ARGS->get_input_array(k2ND_ARG, kMX_ANY, 1, 1);
+  const mxArray* mx_grp_id = MEX_ARGS->get_input_array(k2ND_ARG, kMX_ANY, 1, 1);
   if (mx_grp_id == 0 || ::mxIsNumeric(mx_grp_id) == false) 
   {
     MEX_UTILS->set_error("invalid argin specified",
@@ -8429,7 +8407,7 @@ int TangoBinding::group_disable_device (void)
     SET_DEFAULT_PRHS_THEN_RETURN(kError);
 
   //- get <forward> option from 4th input arg
-  mxArray * mx_forward = MEX_ARGS->get_input_array(k4TH_ARG, kMX_ANY, 1, 1);
+  const mxArray* mx_forward = MEX_ARGS->get_input_array(k4TH_ARG, kMX_ANY, 1, 1);
   if (mx_forward == 0 || ::mxIsNumeric(mx_forward) == false) 
   {
     std::string r = "could not ping group " + g->get_name();
@@ -8467,7 +8445,7 @@ int TangoBinding::group_disable_device (void)
 
 #endif //- #if !defined (DISABLE_TANGO_GROUP_SUPPORT)
 
-#if defined (WIN32)
+#if defined(_WINDOWS)
 # pragma warning(pop)
 #endif
 

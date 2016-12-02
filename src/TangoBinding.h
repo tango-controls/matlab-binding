@@ -299,24 +299,24 @@ private:
 	  mwSize index,
 	  bool exit_on_error);
 
-  Tango::DevLong group_command_inout_asynch_specific_scalar (Tango::Group * g, 
+  Tango::DevLong group_command_inout_asynch_specific_scalar (Tango::Group*  g, 
                                                              const std::string & cmd,
                                                              bool forget,
                                                              bool forward, 
-                                                             mxArray * mx_array);
+                                                             const mxArray* mx_array);
   // special case of group_command_inout_asynch 
 
-  Tango::DevLong group_command_inout_asynch_specific_vector (Tango::Group * g, 
+  Tango::DevLong group_command_inout_asynch_specific_vector (Tango::Group*  g, 
                                                              const std::string & cmd,
                                                              bool forget,
                                                              bool forward, 
-                                                             mxArray * mx_array);
+                                                             const mxArray* mx_array);
   // special case of group_command_inout_asynch 
 
-  Tango::DevLong group_write_attr_asynch_specific_scalar (Tango::Group * g, 
+  Tango::DevLong group_write_attr_asynch_specific_scalar (Tango::Group*  g, 
                                                           const std::string & attr,
                                                 					bool forward, 
-                                                					mxArray * mx_array);
+                                                          const mxArray* mx_array);
   // special case of group_write_attr_asynch 
 
   static TangoBinding * instance_;

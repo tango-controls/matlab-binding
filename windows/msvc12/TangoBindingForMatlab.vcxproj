@@ -98,14 +98,14 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <_ProjectFileVersion>10.0.40219.1</_ProjectFileVersion>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\..\vis\</OutDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">..\..\vis\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\..\mex-file\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">..\..\mex-file\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\Debugx86\</IntDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\Debugx64\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</LinkIncremental>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\vis\</OutDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">..\..\vis\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\mex-file\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">..\..\mex-file\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\Releasex86\</IntDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\Releasex64\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
@@ -117,15 +117,19 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);..\..\runtime\windows\vc12</IncludePath>
+    <TargetExt>.mexw64</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);..\..\runtime\windows\vc12</IncludePath>
+    <TargetExt>.mexw64</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <IncludePath>$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSdkDir)include;$(FrameworkSDKDir)\include;..\..\runtime\windows\vc10</IncludePath>
+    <TargetExt>.mexw32</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <IncludePath>$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSdkDir)include;$(FrameworkSDKDir)\include;..\..\runtime\windows\vc10</IncludePath>
+    <TargetExt>.mexw32</TargetExt>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Midl>
@@ -140,7 +144,7 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>..\..\src;$(ML_INC32);$(LOG4TANGO_INC32);$(TANGO_INC32);$(OMNIORB_INC32);$(ZMQ_INC32);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;TANGO_HAS_DLL;_TANGO_HAS_THREAD_SAFE_DEVICE_PROXY_;LOG4TANGO_HAS_DLL;USE_TANGO_6_OR_SUP;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>MAP_DEV_BOOLEAN_TO_MATLAB_LOGICAL;_WINDOWS;_DEBUG;_WINDOWS;_USRDLL;TANGO_HAS_DLL;_TANGO_HAS_THREAD_SAFE_DEVICE_PROXY_;LOG4TANGO_HAS_DLL;USE_TANGO_6_OR_SUP;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -163,12 +167,12 @@
     </ResourceCompile>
     <Link>
       <AdditionalOptions>/IGNORE:4049 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>$(YAT_DBG_LIB32_LIST);$(YAT4TANGO_DBG_LIB32_LIST);$(LOG4TANGO_LIB32_LIST);$(LOG4TANGO_LIB32_LIST);$(TANGO_LIB32_LIST);$(OMNIORB_LIB32_LIST);$(ZMQ_LIB32_LIST);$(LV_LIB32_LIST);user32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>../../vis/tango_binding.dll</OutputFile>
+      <AdditionalDependencies>$(YAT_DBG_LIB32_LIST);$(YAT4TANGO_DBG_LIB32_LIST);$(LOG4TANGO_LIB32_LIST);$(LOG4TANGO_LIB32_LIST);$(TANGO_LIB32_LIST);$(OMNIORB_LIB32_LIST);$(ZMQ_LIB32_LIST);$(ML_LIB32_LIST);user32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>../../mex-file/tango_binding.dll</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <AdditionalLibraryDirectories>$(LV_LIB32);$(LOG4TANGO_LIB32);$(TANGO_LIB32);$(OMNIORB_LIB32);$(ZMQ_LIB32);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ML_LIB32);$(LOG4TANGO_LIB32);$(TANGO_LIB32);$(OMNIORB_LIB32);$(ZMQ_LIB32);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <ProgramDatabaseFile>../../vis/tango_binding.pdb</ProgramDatabaseFile>
+      <ProgramDatabaseFile>../../mex-file/tango_binding.pdb</ProgramDatabaseFile>
       <SupportUnloadOfDelayLoadedDLL>true</SupportUnloadOfDelayLoadedDLL>
       <ImportLibrary>.\Debugx86/tango_binding.lib</ImportLibrary>
       <TargetMachine>MachineX86</TargetMachine>
@@ -191,7 +195,7 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>..\..\src;$(ML_INC64);$(LOG4TANGO_INC64);$(TANGO_INC64);$(OMNIORB_INC64);$(ZMQ_INC64);$(YAT_INC64);$(YAT4TANGO_INC64);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;WIN64;_WIN32;_WIN64;_M_X64;_64BITS;NDEBUG;_WINDOWS;_USRDLL;TANGO_HAS_DLL;LOG4TANGO_HAS_DLL;YAT4TANGO_DLL;YAT_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>MAP_DEV_BOOLEAN_TO_MATLAB_LOGICAL;_WINDOWS;WIN64;_WIN32;_WIN64;_M_X64;_64BITS;NDEBUG;_WINDOWS;_USRDLL;TANGO_HAS_DLL;LOG4TANGO_HAS_DLL;YAT4TANGO_DLL;YAT_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <ForceConformanceInForLoopScope>false</ForceConformanceInForLoopScope>
@@ -213,12 +217,12 @@
     </ResourceCompile>
     <Link>
       <AdditionalOptions>/IGNORE:4049 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>$(YAT_LIB64_LIST);$(YAT4TANGO_LIB64_LIST);$(ZMQ_LIB64_LIST);$(OMNIORB_LIB64_LIST);$(LOG4TANGO_LIB64_LIST);$(TANGO_LIB64_LIST);$(LV_LIB64_LIST);%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>../../vis/tango_binding.dll</OutputFile>
+      <AdditionalDependencies>$(YAT_LIB64_LIST);$(YAT4TANGO_LIB64_LIST);$(ZMQ_LIB64_LIST);$(OMNIORB_LIB64_LIST);$(LOG4TANGO_LIB64_LIST);$(TANGO_LIB64_LIST);$(ML_LIB64_LIST);%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>../../mex-file/tango_binding.mexw64</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <AdditionalLibraryDirectories>$(LV_LIB64);$(LOG4TANGO_LIB64);$(TANGO_LIB64);$(OMNIORB_LIB64);$(ZMQ_LIB64);$(YAT_LIB64);$(YAT4TANGO_LIB64);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ML_LIB64);$(LOG4TANGO_LIB64);$(TANGO_LIB64);$(OMNIORB_LIB64);$(ZMQ_LIB64);$(YAT_LIB64);$(YAT4TANGO_LIB64);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <ProgramDatabaseFile>../../vis/tango_binding.pdb</ProgramDatabaseFile>
+      <ProgramDatabaseFile>../../mex-file/tango_binding.pdb</ProgramDatabaseFile>
       <SupportUnloadOfDelayLoadedDLL>true</SupportUnloadOfDelayLoadedDLL>
       <ImportLibrary>.\Debugx64/tango_binding.lib</ImportLibrary>
       <ForceFileOutput>MultiplyDefinedSymbolOnly</ForceFileOutput>
@@ -242,7 +246,7 @@
       <Optimization>Full</Optimization>
       <InlineFunctionExpansion>Default</InlineFunctionExpansion>
       <AdditionalIncludeDirectories>..\..\src;$(ML_INC32);$(LOG4TANGO_INC32);$(TANGO_INC32);$(OMNIORB_INC32);$(ZMQ_INC32);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;TANGO_HAS_DLL;LOG4TANGO_HAS_DLL;USE_TANGO_6_OR_SUP;_TANGO_HAS_THREAD_SAFE_DEVICE_PROXY_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>MAP_DEV_BOOLEAN_TO_MATLAB_LOGICAL;_WINDOWS;NDEBUG;_WINDOWS;_USRDLL;TANGO_HAS_DLL;LOG4TANGO_HAS_DLL;USE_TANGO_6_OR_SUP;_TANGO_HAS_THREAD_SAFE_DEVICE_PROXY_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <FunctionLevelLinking>false</FunctionLevelLinking>
@@ -265,12 +269,12 @@
     </ResourceCompile>
     <Link>
       <AdditionalOptions>/IGNORE:4089 /IGNORE:4049  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>$(YAT_LIB32_LIST);$(YAT4TANGO_LIB32_LIST);$(TANGO_LIB32_LIST);$(OMNIORB_LIB32_LIST);$(ZMQ_LIB32_LIST);$(LOG4TANGO_LIB32_LIST);$(LV_LIB32_LIST);user32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>../../vis/tango_binding.dll</OutputFile>
+      <AdditionalDependencies>$(YAT_LIB32_LIST);$(YAT4TANGO_LIB32_LIST);$(TANGO_LIB32_LIST);$(OMNIORB_LIB32_LIST);$(ZMQ_LIB32_LIST);$(LOG4TANGO_LIB32_LIST);$(ML_LIB32_LIST);user32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>../../mex-file/tango_binding.dll</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <AdditionalLibraryDirectories>$(LV_LIB32);$(LOG4TANGO_LIB32);$(TANGO_LIB32);$(OMNIORB_LIB32);$(ZMQ_LIB32);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ML_LIB32);$(LOG4TANGO_LIB32);$(TANGO_LIB32);$(OMNIORB_LIB32);$(ZMQ_LIB32);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <ProgramDatabaseFile>../../vis/tango_binding.pdb</ProgramDatabaseFile>
+      <ProgramDatabaseFile>../../mex-file/tango_binding.pdb</ProgramDatabaseFile>
       <SupportUnloadOfDelayLoadedDLL>false</SupportUnloadOfDelayLoadedDLL>
       <ImportLibrary>.\Releasex86/tango_binding.lib</ImportLibrary>
       <TargetMachine>MachineX86</TargetMachine>
@@ -294,7 +298,7 @@
       <Optimization>Full</Optimization>
       <InlineFunctionExpansion>Default</InlineFunctionExpansion>
       <AdditionalIncludeDirectories>..\..\src;$(ML_INC64);$(LOG4TANGO_INC64);$(TANGO_INC64);$(OMNIORB_INC64);$(ZMQ_INC64);$(YAT_INC64);$(YAT4TANGO_INC64);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;WIN64;_WIN32;_WIN64;_M_X64;_64BITS;NDEBUG;_WINDOWS;_USRDLL;TANGO_HAS_DLL;LOG4TANGO_HAS_DLL;YAT4TANGO_DLL;YAT_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>MAP_DEV_BOOLEAN_TO_MATLAB_LOGICAL;_WINDOWS;WIN64;_WIN32;_WIN64;_M_X64;_64BITS;NDEBUG;_WINDOWS;_USRDLL;TANGO_HAS_DLL;LOG4TANGO_HAS_DLL;YAT4TANGO_DLL;YAT_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <FunctionLevelLinking>false</FunctionLevelLinking>
@@ -317,12 +321,12 @@
     </ResourceCompile>
     <Link>
       <AdditionalOptions>/IGNORE:4089 /IGNORE:4049  %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>$(YAT_LIB64_LIST);$(YAT4TANGO_LIB64_LIST);$(ZMQ_LIB64_LIST);$(OMNIORB_LIB64_LIST);$(LOG4TANGO_LIB64_LIST);$(TANGO_LIB64_LIST);$(LV_LIB64_LIST);%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>../../vis/tango_binding.dll</OutputFile>
+      <AdditionalDependencies>$(YAT_LIB64_LIST);$(YAT4TANGO_LIB64_LIST);$(ZMQ_LIB64_LIST);$(OMNIORB_LIB64_LIST);$(LOG4TANGO_LIB64_LIST);$(TANGO_LIB64_LIST);$(ML_LIB64_LIST);%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>../../mex-file/tango_binding.mexw64</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <AdditionalLibraryDirectories>$(LV_LIB64);$(LOG4TANGO_LIB64);$(TANGO_LIB64);$(OMNIORB_LIB64);$(ZMQ_LIB64);$(YAT_LIB64);$(YAT4TANGO_LIB64);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ML_LIB64);$(LOG4TANGO_LIB64);$(TANGO_LIB64);$(OMNIORB_LIB64);$(ZMQ_LIB64);$(YAT_LIB64);$(YAT4TANGO_LIB64);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <ProgramDatabaseFile>../../vis/tango_binding.pdb</ProgramDatabaseFile>
+      <ProgramDatabaseFile>../../mex-file/tango_binding.pdb</ProgramDatabaseFile>
       <SupportUnloadOfDelayLoadedDLL>false</SupportUnloadOfDelayLoadedDLL>
       <ImportLibrary>.\Releasex64/tango_binding.lib</ImportLibrary>
       <PreventDllBinding>

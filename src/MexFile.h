@@ -117,7 +117,7 @@ class MexFile
   static MexArgs args;
   //- MEX-File arguments
 
-  static void exec (int nlhs, mxArray ** plhs, int nrhs, mxArray ** prhs);
+  static void exec (int nlhs, mxArray ** plhs, int nrhs, const mxArray ** prhs);
   //- Executes a MEX-File command providing the command ID and the i/o arguments.
 
   static void version (void);

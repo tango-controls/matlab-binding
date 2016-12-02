@@ -16,7 +16,7 @@
 // MexArgs::set
 //=============================================================================
 MEX_INLINE void 
-MexArgs::set (int nlhs, mxArray * plhs[], int nrhs, mxArray * prhs[])
+MexArgs::set (int nlhs, mxArray * plhs[], int nrhs, const mxArray* prhs[])
 {
   this->nlhs_ = nlhs;
   this->plhs_ = plhs;
@@ -51,7 +51,7 @@ MEX_INLINE int MexArgs::nrhs (void) const
 //=============================================================================
 // MexArgs::prhs
 //=============================================================================
-MEX_INLINE mxArray ** MexArgs::prhs (void) const
+MEX_INLINE const mxArray ** MexArgs::prhs (void) const
 {
   return this->prhs_; 
 }

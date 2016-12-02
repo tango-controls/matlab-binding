@@ -25,13 +25,9 @@
 // prhs...Array of right hand side arguments
 // ============================================================================
 
-extern "C" {
- void mexFunction (int nlhs, mxArray **, int nrhs, const mxArray **);
-}
-
-void mexFunction (int nlhs, mxArray ** plhs, int nrhs, const mxArray ** prhs)
+void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
-  MexFile::exec(nlhs, plhs, nrhs, const_cast<mxArray**>(prhs));     
+  MexFile::exec(nlhs, plhs, nrhs, prhs);
 }
 
 

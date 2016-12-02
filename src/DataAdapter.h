@@ -37,7 +37,7 @@ public:
   
   int encode_argin (DeviceDesc * ddesc, 
                     int cmd_id,
-                    mxArray * argin,
+                    const mxArray* argin,
                     Tango::DeviceData& dd_in);
   //- Converts <argin> from Matlab type to TANGO type
 
@@ -49,21 +49,23 @@ public:
   
   int encode_attr (DeviceDesc * ddesc, 
                    int attr_id,
-                   mxArray * argin,
+                   const mxArray* argin,
                    Tango::DeviceAttribute& attr_value);
   //- Converts <argin> from Matlab type to TANGO type
 
   int decode_attr (DeviceDesc * ddesc, 
                    int attr_id,
                    Tango::DeviceAttribute & attr_value, 
-                   mxArray *& value, mxArray *& setvalue);
+                   mxArray *& value, 
+                   mxArray *& setvalue);
   //- Converts <attr_value> from TANGO type to Matlab type
 
-  template<typename T> std::vector<T> * 
-        mxarray_to_vector (mxArray * mx_array, const T& template_arg) 
+  template<typename T> 
+  std::vector<T>* 
+  mxarray_to_vector(const mxArray* mx_array, const T& template_arg)
   {
     //- check input 
-    if (mx_array == 0) 
+    if (! mx_array) 
     {
       MEX_UTILS->set_error("internal error",
 			                     "unexpected null array",
@@ -88,11 +90,12 @@ public:
     return v;
   }
 
-  template<typename T> std::vector<std::vector<T> > * 
-        mxarray_to_vector_of_vector (mxArray * mx_array, const T& template_arg)
+  template<typename T> 
+  std::vector<std::vector<T> >* 
+  mxarray_to_vector_of_vector(const mxArray* mx_array, const T& template_arg)
   {
     //- check input 
-    if (mx_array == 0)
+    if (! mx_array)
     {
       MEX_UTILS->set_error("internal error",
 			                     "unexpected null array",
@@ -141,20 +144,20 @@ public:
     return v;
   }
 
-  std::vector<std::string> * 
-       mxarray_to_vector_of_string (mxArray * mx_array);
+  std::vector<std::string>*
+    mxarray_to_vector_of_string (const mxArray* mx_array);
   //- 
 
-  std::vector<std::vector<std::string> >* 
-       mxarray_to_vector_of_vector_of_string (mxArray * mx_array);
+  std::vector<std::vector<std::string> >*
+    mxarray_to_vector_of_vector_of_string(const mxArray* mx_array);
   //- 
 
-  std::vector<Tango::DevVarLongStringArray*>* 
-       mxarray_to_vector_of_dvlsa (mxArray * mx_array);
+  std::vector<Tango::DevVarLongStringArray*>*
+    mxarray_to_vector_of_dvlsa(const mxArray* mx_array);
   //- 
 
-  std::vector<Tango::DevVarDoubleStringArray*>* 
-       mxarray_to_vector_of_dvdsa (mxArray * mx_array);
+  std::vector<Tango::DevVarDoubleStringArray*>*
+    mxarray_to_vector_of_dvdsa(const mxArray* mx_array);
   //- 
 
 private:

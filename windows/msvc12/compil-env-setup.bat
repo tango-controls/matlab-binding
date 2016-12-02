@@ -20,25 +20,25 @@ set RUNTIME_BIN_X64=%RUNTIME_PATH_X64%\lib\x64\tango-9.2.2-vc12
 ::- path
 set PATH=%RUNTIME_BIN_X86%;%PATH%
 set PATH=%RUNTIME_BIN_X64%;%PATH%
-set PATH=%BINDING_PATH%\vis;%PATH%
+set PATH=%BINDING_PATH%\mex-file;%PATH%
 
 ::------------------------------------------------------------------------
 :: ======== MATLAB OR OCTAVE X64 PATHS 
 ::------------------------------------------------------------------------
-set ML_ROOT64=C:\mystuffs\tools\octave-4.2.0-w64
-set ML_INC64=%ML_ROOT64%\include\octave-4.2.0\octave
-set ML_LIB64=%ML_ROOT64%\lib\win32\microsoft
+set ML_ROOT64=C:\Program Files\MATLAB\R2016b\extern
+set ML_INC64=%ML_ROOT64%\include
+set ML_LIB64=%ML_ROOT64%\lib\win64\microsoft
 set ML_RC64=%ML_ROOT64%\include
-SET ML_LIB64_LIST=libmx.lib
+SET ML_LIB64_LIST=libmex.lib;libmx.lib
 
 ::------------------------------------------------------------------------
 :: ======== MATLAB OR OCTAVE X86 PATHS
 ::------------------------------------------------------------------------
-set ML_ROOT32=C:\mystuffs\tools\octave-4.2.0-w32
-set ML_INC32=%ML_ROOT32%\include\octave-4.2.0\octave
+set ML_ROOT32=C:\Program Files (x86)\MATLAB\R2016b\extern
+set ML_INC32=%ML_ROOT32%\include
 set ML_LIB32=%ML_ROOT32%\lib\win32\microsoft
 set ML_RC32=%ML_ROOT32%\include
-SET ML_LIB32_LIST=libmx.lib
+SET ML_LIB32_LIST=libmex.lib;libmx.lib
 
 ::------------------------------------------------------------------------
 :: ======== YAT32 ======== 

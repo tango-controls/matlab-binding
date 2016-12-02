@@ -250,7 +250,7 @@ void GroupRepository::dump (Tango::DevLong group_id)
   } 
   else 
   {
-    Tango::Group * g = get(group_id, false);
+    Tango::Group*  g = get(group_id, false);
     if (g) 
     {
       MEX_DEBUG("* TANGO Group: %s\n", g->get_fully_qualified_name().c_str()); 

@@ -36,7 +36,7 @@ const char *MexFile::kMEX_VERSION = "3.0.0";
 //=============================================================================
 // WINDOWS DLL HELL: DllMain
 //=============================================================================
-#if defined(WIN32)
+#if defined(_WINDOWS)
 BOOL APIENTRY DllMain (HANDLE h, DWORD  reason_for_call, LPVOID r)
 {
   switch (reason_for_call)
@@ -69,7 +69,7 @@ BOOL APIENTRY DllMain (HANDLE h, DWORD  reason_for_call, LPVOID r)
 //=============================================================================
 // C like exit/cleanup function (just to make some compilers happy)
 //=============================================================================
-#if !defined(WIN32)
+#if !defined(_WINDOWS)
 
 extern "C" 
 {
@@ -123,7 +123,7 @@ int MexFile::init (void)
     return kError;
   }
 
-#if ! defined(WIN32)
+#if ! defined(_WINDOWS)
   //- set cleanup function (called when mex-file is discarded from memory)
 # if ! defined(SCILAB)
     ::mexAtExit(c_cleanup);
@@ -183,9 +183,9 @@ void MexFile::version (void)
 //=============================================================================
 // MexFile::exec
 //=============================================================================
-void MexFile::exec (int nlhs, mxArray ** plhs, int nrhs, mxArray ** prhs) 
+void MexFile::exec (int nlhs, mxArray ** plhs, int nrhs, const mxArray ** prhs) 
 {
-#if !defined(WIN32)
+#if !defined(_WINDOWS)
   // check initialization
   if (MexFile::initialized == 0 && MexFile::init() == kError) {
     ::mexErrMsgTxt("initialization failed");

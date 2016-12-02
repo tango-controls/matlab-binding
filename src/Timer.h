@@ -19,14 +19,14 @@
 // ============================================================================
 #include <ctime>
 #include <limits>
-#if defined (WIN32)
+#if defined(_WINDOWS)
 # include <sys/timeb.h>
 # include <time.h>
 #else
 # include <sys/time.h>
 #endif
 
-#if defined (WIN32)
+#if defined(_WINDOWS)
   namespace std 
   { 
     using ::clock_t; 
@@ -34,7 +34,7 @@
   }
 #endif
 
-#if ! defined (WIN32) 
+#if ! defined(_WINDOWS)
  
 // ============================================================================
 // class Timer
@@ -82,7 +82,7 @@ private:
   struct timeval _start_time;
 };
 
-#else // ! WIN32
+#else // ! _WINDOWS
 
 // ============================================================================
 // class: Timer
@@ -135,7 +135,7 @@ private:
   }
 };
 
-#endif // ! WIN32
+#endif // ! _WINDOWS
 
 // ============================================================================
 // class: Timeout

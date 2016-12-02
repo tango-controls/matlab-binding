@@ -61,10 +61,10 @@ public:
   int remove (Tango::Group* group, bool release = true);
   // Given a group, remove it from the repository.
   
-  Tango::Group * get (Tango::DevLong group_id, bool set_error = true);
+  Tango::Group* get (Tango::DevLong group_id, bool set_error = true);
   // Given a group id, returns its address or NULL if no such group.
 
-  Tango::Group * get (const std::string& name, bool set_error = true);
+  Tango::Group* get (const std::string& name, bool set_error = true);
   // Given a group name, returns its address or NULL if no such group.
 
   Tango::DevLong gid (const std::string& name, bool set_error = true);

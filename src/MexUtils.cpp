@@ -305,7 +305,7 @@ int MexUtils::error_stack_to_mxarray (const Tango::DevErrorList& es, mxArray*& m
   const mwSize dims[2] = {1, static_cast<mwSize>(nerr)};
   const char *field_names[] = {"reason", "desc", "origin", "severity", "severity_str"};
   mx_array = ::mxCreateStructArray(2, dims, 5, field_names);
-  if (mx_array == 0) 
+  if (! mx_array) 
   {
     MEX_ERROR(("mxCreateStructArray failed - could not export TANGO error stack"));
     return kError;

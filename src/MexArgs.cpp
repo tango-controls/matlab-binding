@@ -148,11 +148,11 @@ int MexArgs::get_input_string (int _arg_pos, std::string& str_, int _set_error) 
 //=============================================================================
 // MexArgs::get_input_array
 //=============================================================================
-mxArray * MexArgs::get_input_array(int _arg_pos, 
-                                   int _mx_class, 
-                                   int _mx_m, 
-                                   int _mx_n, 
-                                   int _set_error) const
+const mxArray* MexArgs::get_input_array(int _arg_pos, 
+                                         int _mx_class, 
+                                         int _mx_m, 
+                                         int _mx_n, 
+                                         int _set_error) const
 {
   if (_arg_pos < 0 || _arg_pos >= this->nrhs_) 
   {
@@ -165,7 +165,7 @@ mxArray * MexArgs::get_input_array(int _arg_pos,
     return 0;
   }
 
-  mxArray * mx_array = this->prhs_[_arg_pos];
+  const mxArray* mx_array = this->prhs_[_arg_pos];
 
   if (   mx_array == 0
       ||

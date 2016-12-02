@@ -27,7 +27,7 @@ MEX_INLINE Tango::DevLong GroupRepository::gid (const std::string& name, bool se
   GroupMapIterator it = begin();
   GroupMapIterator _end = end();
   
-  Tango::Group * g = 0;
+  Tango::Group* g = 0;
   
   for (; it != _end && g == 0; it++)
     g = it->second->get_group(name);
@@ -52,7 +52,7 @@ MEX_INLINE Tango::Group* GroupRepository::get (const std::string& name, bool set
   GroupMapIterator it = begin();
   GroupMapIterator _end = end();
   
-  Tango::Group * g = 0;
+  Tango::Group* g = 0;
   
   for (; it != _end && g == 0; it++) 
     g = it->second->get_group(name);

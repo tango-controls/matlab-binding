@@ -57,7 +57,7 @@ public:
   int nrhs (void) const;
   // Returns the number of input args of the mex function.
 
-  mxArray ** prhs (void) const;
+  const mxArray ** prhs(void) const;
   // Returns the input args of the mex function.
 
   int is_string (int arg_pos, int set_error = 1) const;
@@ -75,11 +75,11 @@ public:
   // Tango::DevError is pushed into the global error stack (see 
   // MexUtils.h).
 
-  mxArray * get_input_array (int arg_pos,
-                             int mx_class = kMX_ANY,
-                             int mx_m = kMX_ANY,
-                             int mx_n = kMX_ANY,
-                             int set_error = 1) const;
+  const mxArray* get_input_array (int arg_pos,
+                                   int mx_class = kMX_ANY,
+                                   int mx_m = kMX_ANY,
+                                   int mx_n = kMX_ANY,
+                                   int set_error = 1) const;
   // Returns the <arg_pos>th input argument of the mex-file. If 
   // <set_error> is set to 1 (the default) a Tango::DevError is 
   // pushed into the global error stack (see MexUtils.h).
@@ -90,11 +90,11 @@ public:
   // error stack (see MexUtils.h). This function returns -1 on error, 0 
   // otherwise. 
 
-  mxArray * default_prhs (double content = -1) const;
+  mxArray * default_prhs(double content = -1) const;
   // Returns the <default plhs>. 
 
 private:
-  void set (int nlhs, mxArray * plhs[], int nrhs, mxArray * prhs[]);
+  void set(int nlhs, mxArray * plhs[], int nrhs, const mxArray* prhs[]);
   // Store all mex-file args.
 
   int nlhs_;
@@ -106,7 +106,7 @@ private:
   int nrhs_;
   // Number of input args. 
 
-  mxArray ** prhs_;
+  const mxArray ** prhs_;
   // Input args.
 
   // = Disallow these operations (except for friend function).
