@@ -1,0 +1,89 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Include">
+      <UniqueIdentifier>{359b53a0-2f5e-42cf-acf5-ba964fee4fa8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Inline">
+      <UniqueIdentifier>{cb873adf-a8d6-47da-a787-2a6405c86606}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source">
+      <UniqueIdentifier>{a58b89ac-6cda-423d-b649-54ecb62af5b0}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\matlab-binding%40github\src\DataAdapter.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\matlab-binding%40github\src\DevRepository.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\matlab-binding%40github\src\GroupRepository.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\matlab-binding%40github\src\main.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\matlab-binding%40github\src\MexArgs.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\matlab-binding%40github\src\MexFile.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\matlab-binding%40github\src\MexUtils.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\matlab-binding%40github\src\TangoBinding.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\matlab-binding%40github\src\DataAdapter.i">
+      <Filter>Inline</Filter>
+    </None>
+    <None Include="..\..\..\matlab-binding%40github\src\DevRepository.i">
+      <Filter>Inline</Filter>
+    </None>
+    <None Include="..\..\..\matlab-binding%40github\src\GroupRepository.i">
+      <Filter>Inline</Filter>
+    </None>
+    <None Include="..\..\..\matlab-binding%40github\src\MexArgs.i">
+      <Filter>Inline</Filter>
+    </None>
+    <None Include="..\..\..\matlab-binding%40github\src\MexUtils.i">
+      <Filter>Inline</Filter>
+    </None>
+    <None Include="..\..\..\matlab-binding%40github\src\TangoBinding.i">
+      <Filter>Inline</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\matlab-binding%40github\src\DataAdapter.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\matlab-binding%40github\src\DevRepository.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\matlab-binding%40github\src\GroupRepository.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\matlab-binding%40github\src\MexArgs.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\matlab-binding%40github\src\MexFile.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\matlab-binding%40github\src\MexUtils.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\matlab-binding%40github\src\StandardHeader.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\matlab-binding%40github\src\TangoBinding.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\matlab-binding%40github\src\Timer.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

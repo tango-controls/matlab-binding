@@ -1,0 +1,202 @@
+//=============================================================================
+// RELEASE 3.0.0 - 03/20/2014 - L.FARVACQUE- ESRF & N.LECLERCQ - SOLEIL
+//=============================================================================
+IMPORTANT NOTE:
+- The present release requires TANGO 8.1.x or higher 
+
+BUG FIXES, OPTIMISATIONS, ...:
+- Thanks to Laurent Farvacque (ESRF) : 
+  - several bug fixes & code improvements
+
+NEW FEATURES:
+- Thanks to Laurent Farvacque (ESRF) : 
+  - new fields in the returned data structures
+  - a nice object layer 
+
+  Grateful thanks are extended to Laurent Farvacque for his contibution.
+
+  Please send bug report, comment or suggestion to the Tango mailing list.
+
+//=============================================================================
+// RELEASE 2.0.1 - 09/24/2012 - Nicolas Leclercq - SOLEIL
+//=============================================================================
+IMPORTANT NOTE:
+- The present release requires TANGO 7.x or higher (8.1 recommended)
+
+FEATURES:
+- added Tango 8 support 
+  
+  Please send bug report, comment or suggestion to the Tango mailing list.
+
+//=============================================================================
+// RELEASE 2.0.0 - 03/01/2010 - Nicolas Leclercq - SOLEIL
+//=============================================================================
+IMPORTANT NOTE:
+- The present release requires TANGO 5.2 or higher (7.1.1 recommended)
+
+FEATURES:
+- added 64-bits Support (tested under Mac OS X 10.6.2)
+  
+  Please send bug report, comment or suggestion to the Tango mailing list.
+  
+//=============================================================================
+// RELEASE 1.8.3 - 02/03/2009 - Nicolas Leclercq - SOLEIL
+//=============================================================================
+IMPORTANT NOTE:
+- The present release requires TANGO 5.2 or higher (6.1.1b recommended)
+
+FEATURES:
+- Nothing really new - minor changes - 64-bits support in progress
+- Fixed some "holes" in error handling 
+- Binding recompiled using VC8 under Windows
+  
+  Please send bug report, comment or suggestion to the Tango mailing list.
+   
+//=============================================================================
+// RELEASE 1.6.0 - 01/30/06 - Nicolas Leclercq - SOLEIL
+//=============================================================================
+IMPORTANT NOTE:
+- The present release requires TANGO 5.2 or higher.
+
+FEATURES:
+- Full support for TANGO 5.x features
+  Added full support for writable sprectrum and image attributes. This feature
+  is fully tested under Windows (tango_reg_test.m upgraded). More tests required
+  under Linux and SOLARIS but should be stable.
+
+//=============================================================================
+// RELEASE 1.5.0 - 02/24/05 - Nicolas Leclercq - SOLEIL
+//=============================================================================
+IMPORTANT NOTE:
+- The present release requires the very last version of the Tango::Group C++ 
+  class. This Tango::Group version should be released with TANGO 5.2 but is
+	already available on TANGO CVS repository (sourceforge). You can also 
+  disable the TANGO group features when compiling the binding. In this case 
+  add -DDISABLE_TANGO_GROUP_SUPPORT to your CC flags.
+
+FEATURES:
+- Support for TANGO 5.x
+  Added support for new Tango attribute types 
+	Support for writting spectrum and/or image attribute is partial and not 
+  fully tested.
+- Fixed a bug in TANGO groups.
+- Fixed ORB shutdown problem in TANGO core library. The binding can now be 
+  safely loaded/unloaded using the  Matlab clear function (e.g. clear all). 
+  No more crash under both Windows and Linux - to be confirmed under Solaris. 
+
+KNOWN PROBLEMS/BUGS:
+- When compiling the binding for Windows, Microsoft Visual C++ 6 reports
+  some "name truncation" warnings (C4786) even if this warning is explicitly
+  disabled using a pragma. This is a known bug of Microsoft Visual C++ 6
+  (only fixed in msvc7). You can safely ignore them.
+
+NOTE:
+- There is no plan to support TANGO events in matlab unless someone out there
+  knows how to handle a pure asynchronous mechanism under matlab. In other
+  words, we would like the implementation to fit with the event model by not
+  requiring the user to poll events locally.
+
+  Please send bug report, comment or suggestion to the Tango mailing list.
+	
+//=============================================================================
+// RELEASE 1.4.0 - 03/05/04 - Nicolas Leclercq - SOLEIL
+//=============================================================================
+FEATURES:
+- Support for TANGO 4.0.0
+- Added support for TANGO groups.
+- Fixed ORB shutdown problem in TANGO core library. The binding can now be 
+  safely loaded/unloaded using the  Matlab clear function (e.g. clear all). 
+  No more crash under both Windows and Linux - to be confirmed under Solaris. 
+
+KNOWN PROBLEMS/BUGS:
+- When compiling the binding for Windows, Microsoft Visual C++ 6 reports
+  some "name truncation" warnings (C4786) even if this warning is explicitly
+  disabled using a pragma. This is a known bug of Microsoft Visual C++ 6
+  (only fixed in msvc7). You can safely ignore them.
+
+NOTE:
+- There is no plan to support TANGO events in matlab unless someone out there
+  knows how to handle a pure asynchronous mechanism under matlab. In other
+  words, we would like the implementation to fit with the event model by not
+  requiring the user to poll events locally.
+
+  Please send bug report, comment or suggestion to the Tango mailing list.
+
+//=============================================================================
+// RELEASE 1.3.1 - 06/12/03 - Nicolas Leclercq - SOLEIL
+//=============================================================================
+FEATURES:
+- Support for TANGO 3.0.1
+
+BUG FIXES:
+- Fixed a bug in command_inout_asynch.m and command_inout_reply.m.
+
+KNOWN PROBLEMS/BUGS:
+- Matlab crashes is you unload the mex-file (using the clear all or clear
+  functions command). The underlying ORB destruction does not seem to be
+  correctly handled in the context of a mex-file. A simple workaround is
+  to keep the mex-file in memory during your matlab session.
+
+  Please send bug report, comment or suggestion to the Tango mailing list.
+
+//=============================================================================
+// RELEASE 1.3.0 - 06/05/03 - Nicolas Leclercq - SOLEIL
+//=============================================================================
+FEATURES:
+- Support for TANGO 3.0.0 (asynch. version of DeviceProxy's main methods)
+
+BUG FIXES:
+- Fixed a bug in MexArgs::get_input_array.
+
+KNOWN PROBLEMS/BUGS:
+- Matlab crashes is you unload the mex-file (using the clear all or clear
+  functions command). The underlying ORB destruction does not seem to be
+  correctly handled in the context of a mex-file. A simple workaround is
+  to keep the mex-file in memory during your matlab session.
+
+  Please send bug report, comment or suggestion to the Tango mailing list.
+
+//=============================================================================
+// RELEASE 1.2.0 - 03/03/03 - Nicolas Leclercq - SOLEIL
+//=============================================================================
+FEATURES:
+- Support for Matlab R13
+- Support for TANGO 2.2.0
+
+KNOWN PROBLEMS/BUGS:
+- Matlab crashes is you unload the mex-file (using the clear all or clear
+  functions command). The underlying ORB destruction does not seem to be
+  correctly handled in the context of a mex-file. A simple workaround is
+  to keep the mex-file in memory during your matlab session.
+
+  Please send bug report, comment or suggestion to the Tango mailing list.
+
+//=============================================================================
+// RELEASE 1.1.0 - 09/17/02 - Nicolas Leclercq - SOLEIL
+//=============================================================================
+FEATURES:
+- Added device property support (get, put, delete single or several properties)
+
+KNOWN PROBLEMS/BUGS:
+- No known bug.
+
+  Please send bug report, comment or suggestion to the Tango mailing list.
+
+//=============================================================================
+// RELEASE 1.0.0 - 09/10/02 - Nicolas Leclercq - SOLEIL
+//=============================================================================
+FEATURES:
+- First public release
+- This version maps 95% of the Tango::DevProxy class features (property 
+  oriented methods are not implemented)
+- There is no automatic/systematic data type conversion. For instance, the 
+  binding does NOT systematically convert floats to doubles. The user
+  always manipulates the numerical type expected or sent by the device.
+
+KNOWN PROBLEMS/BUGS:
+- No known bug.
+
+  Please send bug report, comment or suggestion to the Tango mailing list.
+
+
+

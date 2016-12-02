@@ -1,0 +1,228 @@
+#------------------------------------------------------------------------------
+# This file is part of the Tango binding for Matlab
+#------------------------------------------------------------------------------
+#
+# Copyright (C) 2002-2014  Nicolas Leclercq, Synchrotron SOLEIL. 
+#
+# The Libera Tango Device is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or (at your
+# option) any later version.
+#
+# The Libera Tango Device is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General
+# Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, write to the Free Software Foundation, Inc., 51
+# Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+#
+# Contact: Nicolas Leclercq - Synchrotron SOLEIL
+#------------------------------------------------------------------------------
+
+#------------------------------------------------------------------------------
+# OMNIORB BASE DIR
+#------------------------------------------------------------------------------
+OMNIORB_BASE=/home/nicolas/tango-8.1.2c-gcc-4.7-gstabs
+
+#------------------------------------------------------------------------------
+# ZMQ_BASE BASE DIR
+#------------------------------------------------------------------------------
+ZMQ_BASE=/home/nicolas/tango-8.1.2c-gcc-4.7-gstabs
+
+#------------------------------------------------------------------------------
+# TANGO BASE DIR
+#------------------------------------------------------------------------------
+TANGO_BASE=/home/nicolas/tango-8.1.2c-gcc-4.7-gstabs
+
+#------------------------------------------------------------------------------
+# LOG4TANGO BASE DIR
+#------------------------------------------------------------------------------
+LOG4TANGO_BASE=$(TANGO_BASE)
+
+#------------------------------------------------------------------------------
+# OCTAVE DIRS
+#------------------------------------------------------------------------------
+OCTAVE_INC=/usr/include/octave-3.6.2
+OCTAVE_LIB=/usr/lib/i386-linux-gnu
+
+#------------------------------------------------------------------------------
+# INCLUDE DIRS
+#------------------------------------------------------------------------------
+INCLUDE_DIRS = -I. \
+               -I$(OMNIORB_BASE)/include \
+               -I$(ZMQ_BASE)/include \
+               -I$(TANGO_BASE)/include/tango \
+               -I$(OCTAVE_INC)/octave
+           
+#------------------------------------------------------------------------------
+# LIB DIRS (HERE WE WANT TO COMPIL VS STATIC LIBS)
+#------------------------------------------------------------------------------
+LIB_DIRS = -L$(OMNIORB_BASE)/lib \
+           -L$(ZMQ_BASE)/lib \
+           -L$(TANGO_BASE)/lib \
+           -L$(OCTAVE_LIB)
+					 
+#------------------------------------------------------------------------------
+# COMPILER/LINKER OPTIONS
+#------------------------------------------------------------------------------
+# COMMON
+#------------------------------------------------------------------------------
+MEX_NAME = tango_binding
+
+#------------------------------------------------------------------------------
+# GNU/LINUX
+#------------------------------------------------------------------------------
+CC=gcc
+CXX=g++
+#------------------------------------------------------------------------------
+CFLAGS  = -fPIC -W -Wall -Wno-unused -Wno-comment -Wno-sign-compare -fno-enforce-eh-specs
+CFLAGS += -D_REENTRANT -DMATLAB_MEX_FILE -DOMNI_UNLOADABLE_STUBS
+#CFLAGS += -DMAP_DEV_BOOLEAN_TO_MATLAB_LOGICAL
+#------------------------------------------------------------------------------
+LD = $(CC)
+#------------------------------------------------------------------------------
+LDFLAGS = -shared -o 
+#------------------------------------------------------------------------------
+MEX_EXT = mex
+#------------------------------------------------------------------------------
+#
+# add -g and -D_DEBUG to the CFLAGS in case you want compile with debugging information
+#
+CFLAGS += -g -O3 -std=c++0x
+#
+#------------------------------------------------------------------------------
+#
+# add -D_MATLAB_R12_ to the CFLAGS in case your are compiling this binding with Matlab <= R12. 
+# 
+# CFLAGS += -D_MATLAB_R12_
+#
+#------------------------------------------------------------------------------
+#
+# add -D_HAS_NO_MWSIZE_TYPE_ to the CFLAGS in case your are compiling this binding 
+# with a Matlab release which does not define the mwSize type (<= 2.7.0.294) 
+# 
+# CFLAGS += -D_HAS_NO_MWSIZE_TYPE_
+#
+#------------------------------------------------------------------------------
+
+#------------------------------------------------------------------------------
+# OBJ FILES
+#------------------------------------------------------------------------------
+OBJS_SO =	main.so.o \
+		MexArgs.so.o \
+		MexFile.so.o \
+		MexUtils.so.o \
+		GroupRepository.so.o \
+		DevRepository.so.o \
+		DataAdapter.so.o \
+		TangoBinding.so.o
+
+#------------------------------------------------------------------------------
+# SHARED_LIBS
+#------------------------------------------------------------------------------
+SHARED_LIBS = 	-ltango \
+		-llog4tango \
+		-lzmq \
+		-lomniDynamic4 \
+		-lCOS4 \
+		-lomniORB4 \
+		-lomnithread \
+		-lpthread \
+		-lm \
+		-ldl \
+		-lstdc++
+
+#------------------------------------------------------------------------------
+# LIBS
+#------------------------------------------------------------------------------
+LIBS = $(SHARED_LIBS)
+
+#------------------------------------------------------------------------------
+# RULE: all
+#------------------------------------------------------------------------------
+all: $(MEX_NAME).$(MEX_EXT) install
+
+#------------------------------------------------------------------------------
+# RULE: $(MEX_NAME).$(MEX_EXT)
+#------------------------------------------------------------------------------
+$(MEX_NAME).$(MEX_EXT): $(OBJS_SO)
+	$(LD) $(LDFLAGS) $(MEX_NAME).$(MEX_EXT) $(OBJS_SO) $(LIB_DIRS) $(LIBS)
+
+#------------------------------------------------------------------------------
+# RULE: mexversion.so.o
+#------------------------------------------------------------------------------
+#mexversion.so.o: $(MATLAB_BASE)/extern/src/mexversion.c
+#	$(CC) $(CFLAGS) $(INCLUDE_DIRS) $(MATLAB_BASE)/extern/src/mexversion.c -c -o mexversion.so.o
+
+#------------------------------------------------------------------------------
+# RULE: main.so.o
+#------------------------------------------------------------------------------
+main.so.o: main.cpp
+	 $(CC) $(CFLAGS) $(INCLUDE_DIRS) main.cpp -c -o main.so.o
+
+#------------------------------------------------------------------------------
+# RULE: MexArgs.so.o
+#------------------------------------------------------------------------------
+MexArgs.so.o: MexArgs.cpp
+	$(CC) $(CFLAGS) $(INCLUDE_DIRS) MexArgs.cpp -c -o MexArgs.so.o
+
+#------------------------------------------------------------------------------
+# RULE: MexFile.so.o
+#------------------------------------------------------------------------------
+MexFile.so.o: MexFile.cpp
+	$(CC) $(CFLAGS) $(INCLUDE_DIRS) MexFile.cpp -c -o MexFile.so.o
+
+#------------------------------------------------------------------------------
+# RULE: MexUtils.so.o
+#------------------------------------------------------------------------------
+MexUtils.so.o: MexUtils.cpp
+	$(CC) $(CFLAGS) $(INCLUDE_DIRS) MexUtils.cpp -c -o MexUtils.so.o
+
+#------------------------------------------------------------------------------
+# RULE: DevRepository.so.o
+#------------------------------------------------------------------------------
+DevRepository.so.o: DevRepository.cpp
+	$(CC) $(CFLAGS) $(INCLUDE_DIRS) DevRepository.cpp -c -o DevRepository.so.o
+
+#------------------------------------------------------------------------------
+# RULE: GroupRepository.so.o
+#------------------------------------------------------------------------------
+GroupRepository.so.o: GroupRepository.cpp
+	$(CC) $(CFLAGS) $(INCLUDE_DIRS) GroupRepository.cpp -c -o GroupRepository.so.o
+
+#------------------------------------------------------------------------------
+# RULE: DataAdapter.so.o
+#------------------------------------------------------------------------------
+DataAdapter.so.o: DataAdapter.cpp
+	$(CC) $(CFLAGS) $(INCLUDE_DIRS) DataAdapter.cpp -c -o DataAdapter.so.o
+
+#------------------------------------------------------------------------------
+# RULE: TangoBinding.so.o
+#------------------------------------------------------------------------------
+TangoBinding.so.o: TangoBinding.cpp
+	$(CC) $(CFLAGS) $(INCLUDE_DIRS) TangoBinding.cpp -c -o TangoBinding.so.o
+
+#------------------------------------------------------------------------------
+# RULE: clean
+#------------------------------------------------------------------------------
+clean:
+	rm -rf ./mex-file
+	rm -f *.so.o *~
+
+#------------------------------------------------------------------------------
+# RULE: install
+#------------------------------------------------------------------------------
+install:
+	mkdir -p ./mex-file
+	cp -f ./$(MEX_NAME).$(MEX_EXT) ./mex-file
+	rm -f ./$(MEX_NAME).$(MEX_EXT)
+
+
+
+
+
+
+
+
