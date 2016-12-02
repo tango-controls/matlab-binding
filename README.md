@@ -18,7 +18,7 @@ Another solution is to recompile the binding with `MAP_DEV_BOOLEAN_TO_MATLAB_LOG
 # Documentation
 
 Each TANGO m-function is self-documented (online documentation). 
-Use the Matlab <help> function to get information on a particular TANGO m-function (e.g. help tango_read_attribute). 
+Use the Matlab `help` function to get information on a particular TANGO m-function (e.g. help tango_read_attribute). 
 
 # How to build on Windows using Microsoft Visual C++ 
 - software requirements 
