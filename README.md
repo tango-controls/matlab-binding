@@ -6,6 +6,16 @@ This is the Matlab (or Octave) client API for [Tango](http://tango-controls.org)
 It runs on Linux and supports both the x86 and x64 version of Matlab/Octave.
 The braves can also make it run on Windows - at least with Matlab - see `/windows/msvcxx`.
 
+# Important Note
+In any release <= 3.0.0, the Tango DevBoolean type used to be mapped to Matlab unint8. Since release 3.1.0, it’s now mapped to Matlab logical type. It means that any existing code must be adapted to become compatible with the new DevBoolean mapping:
+
+```
+argin = unint8(1) -- becomes --> argin = true
+argin = unint8(0) -- becomes --> argin = false
+```
+
+Another solution is to recompile the binding with `MAP_DEV_BOOLEAN_TO_MATLAB_LOGICAL` undefined in order to retrieve the initial behavior. 
+
 # Documentation
 
 Each TANGO m-function is self-documented (online documentation). 
