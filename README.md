@@ -3,8 +3,9 @@
 # About the [Matlab](http://www.mathworks.com) and [Octave](https://www.gnu.org/software/octave/) binding for Tango
 
 This is the Matlab (or Octave) client API for [Tango](http://tango-controls.org). 
-It runs on Linux and supports both the x86 and x64 version of Matlab/Octave.
-The braves can also make it run on Windows - at least with Matlab - see `/windows/msvcxx`.
+It runs on both Linux and Windows x64. 
+So far, the x86 (i.e. 32 bits) mode is still supported on Linux but might be abandoned in a near future.  
+However, here 'abandoned' simply means not tested under x86. The code will certainly continue to compile and run smoothly in x86 mode.
 
 # Important Note
 In any release <= 3.0.0, the Tango DevBoolean type used to be mapped to Matlab unint8. Since release 3.1.0, it’s now mapped to Matlab logical type. It means that any existing code must be adapted to become compatible with the new DevBoolean mapping:
@@ -24,8 +25,8 @@ Use the Matlab <help> function to get information on a particular TANGO m-functi
 # How to build on Windows using Microsoft Visual C++ 
 - software requirements 
   * Microsoft Visual C++ >= 2013 (a.k.a msvc12) 
-  * Matlab x86 and/or x64 >= 2009
-  * No octave support on Windows
+  * Matlab x64 >= 2009  
+  * No octave support on Windows (unless you're ready to recompile Tango with cygwin)
 
 - clone the github repository in a directory of your choice (here we use c:\github)
 ```
@@ -43,10 +44,9 @@ git clone git@github.com:tango-controls/matlab-binding.git
 set BINDING_PATH=c:\github\matlab-binding 
 ```
 
-- set ML_ROOT64 and/or ML_ROOT32 according to your local Matlab installation
+- set ML_ROOT64 according to your local Matlab installation
 ```
-set LV_ROOT32=C:\Program Files (x86)\Mathworks\Matlab-20XX
-set LV_ROOT64=C:\Program Files\Mathworks\Matlab-20XX
+set ML_ROOT64=C:\Program Files\MATLAB\R2016b
 ```
 
 - save the `compil-env-setup.bat` file then open the Visual C++ project
@@ -56,7 +56,7 @@ set LV_ROOT64=C:\Program Files\Mathworks\Matlab-20XX
 
 - select the configuration you want to compile then build the solution
 ```
-{select one of the following combination} [release or debug] / [win32 or x64]
+{select one of the following combination} [release or debug] / [x64]
 {build}
 ```
 
