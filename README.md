@@ -60,13 +60,12 @@ set ML_ROOT64=C:\Program Files\MATLAB\R2016b
 
 - the compilation will hopefully succeed
 ```
-{safely ignore} warning LNK4088: image being generated due to /FORCE option; image may not run
 {check for presence of} c:\github\matlab-binding\mex-file\tango_binding.mexw64
 ```
 - in case you want to use your own Tango runtime, just edit the `compil-env-setup.bat`, modify the paths then rebuild the solution
 
 # How to build on Linux using gcc 
-The main constraint we have is to compile the binding with a gcc version producing a shared library which is binary compatible with the Matlab/Octave version we plan to use. It means we have to identify the proper gcc version to use before trying to compile the code. Fortunately, the Matworks website contains [a page providing this critical information](https://fr.mathworks.com/support/sysreq/previous_releases.html). 
+The main constraint we have is to compile the binding with a gcc version producing a shared library which is binary compatible with the Matlab version we plan to use. It means we have to identify the proper gcc version to use before trying to compile the code. Fortunately, the Matworks website contains [a page providing this critical information](https://fr.mathworks.com/support/sysreq/previous_releases.html). 
 
 Here is the compilation process...
  
