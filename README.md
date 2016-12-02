@@ -53,7 +53,7 @@ set LV_ROOT64=C:\Program Files\Mathworks\Matlab-20XX
 - the compilation will hopefully succeed
 ```
 {safely ignore} warning LNK4088: image being generated due to /FORCE option; image may not run
-{check for presence of} c:\github\matlab-binding\mex-file\tango_binding.dll
+{check for presence of} c:\github\matlab-binding\mex-file\tango_binding.mexw64
 ```
 - in case you want to use your own Tango runtime, just edit the `compil-env-setup.bat`, modify the paths then rebuild the solution
 
