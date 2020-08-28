@@ -24,22 +24,22 @@
 #------------------------------------------------------------------------------
 # OMNIORB BASE DIR
 #------------------------------------------------------------------------------
-OMNIORB_BASE=/home/nicolas/tango-8.1.2a-patched-gcc-4.3
+OMNIORB_BASE=/home/informatique/ica/madela/matlab/tango925/root/usr
 
 #------------------------------------------------------------------------------
 # ZMQ_BASE BASE DIR
 #------------------------------------------------------------------------------
-ZMQ_BASE=/home/nicolas/tango-8.1.2a-patched-gcc-4.3
+ZMQ_BASE=/home/informatique/ica/madela/matlab/tango925/root/usr
 
 #------------------------------------------------------------------------------
 # TANGO BASE DIR
 #------------------------------------------------------------------------------
-TANGO_BASE=/home/nicolas/tango-8.1.2a-patched-gcc-4.3
+TANGO_BASE=/home/informatique/ica/madela/matlab/tango925/root/usr
 
 #------------------------------------------------------------------------------
 # MATLAB BASE DIR
 #------------------------------------------------------------------------------
-MATLAB_BASE=/usr/local/matlab/r2012a
+MATLAB_BASE=/usr/Local/matlabR2018b
 
 #------------------------------------------------------------------------------
 # INCLUDE DIRS
@@ -58,10 +58,10 @@ INCLUDE_DIRS = -I. \
 #           -L$(TANGO_BASE)/lib/static \
 #           -L$(MATLAB_BASE)/bin/glnx86
 #------------------------------------------------------------------------------
-LIB_DIRS = -L$(OMNIORB_BASE)/lib \
-           -L$(ZMQ_BASE)/lib \
-           -L$(TANGO_BASE)/lib \
-           -L$(MATLAB_BASE)/bin/glnx86
+LIB_DIRS = -L$(OMNIORB_BASE)/lib64 \
+           -L$(ZMQ_BASE)/lib64 \
+           -L$(TANGO_BASE)/lib64 \
+           -L$(MATLAB_BASE)/bin/glnxa64
 
 	 
 #------------------------------------------------------------------------------
@@ -74,8 +74,8 @@ MEX_NAME = tango_binding
 #------------------------------------------------------------------------------
 # GNU/LINUX
 #------------------------------------------------------------------------------
-CC=gcc-4.3
-CXX=g++-4.3
+CC=gcc
+CXX=g++
 #------------------------------------------------------------------------------
 CFLAGS  = -fPIC -W -Wall -Wno-unused -Wno-comment -Wno-sign-compare -fno-enforce-eh-specs
 CFLAGS += -D_REENTRANT -DMATLAB_MEX_FILE -DOMNI_UNLOADABLE_STUBS
@@ -85,7 +85,7 @@ LD = $(CC)
 #------------------------------------------------------------------------------
 LDFLAGS = -shared -o 
 #------------------------------------------------------------------------------
-MEX_EXT = mexglx
+MEX_EXT = mexa64
 #------------------------------------------------------------------------------
 #
 # add -g and -D_DEBUG to the CFLAGS in case you want compile with debugging information

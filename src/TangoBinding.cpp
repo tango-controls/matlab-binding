@@ -3367,19 +3367,128 @@ int TangoBinding::set_attr_config (void)
     attrs_config[i].name = cstr;
     //- free memory
     ::mxFree(cstr);
-    //- PASS SOME DUMMY (JUST TO MAKE OMNIORB HAPPY) ----------
-    //- this is a workaround: omniORB raises a CORBA exception 
-    //- if we try to pass some "unintialized values" for fields 
-    //- expecting a TANGO enum value (such as data_type or 
-    //- data_format). Since those fields are NOT modifiable, 
-    //- it is safe to pass dummies.
-    attrs_config[i].data_type          = Tango::DEV_SHORT;
-    attrs_config[i].data_format        = Tango::SCALAR;
-    attrs_config[i].writable           = Tango::READ_WRITE;
-    attrs_config[i].max_dim_x          = 0;
-    attrs_config[i].max_dim_y          = 0;
-    attrs_config[i].writable_attr_name = attrs_config[i].name;
-    attrs_config[i].disp_level         = Tango::OPERATOR;
+    //- FIELD: WRITABLE ---------------------------------------------------
+    //- struct attr_config[i] should contains a <writable> field
+    mx_array = ::mxGetField(attr_config, i, "writable");
+    if (! mx_array) 
+    {
+      MEX_UTILS->set_error("invalid argin specified",
+                           "struct should contain a field named 'writable'",
+                           "TangoBinding::set_attr_config");
+      SET_DEFAULT_PRHS_THEN_RETURN(kError); 
+    }
+    //- this field must be 1-by-1 int array
+    if (::mxIsNumeric(mx_array) == false || ::mxGetM(mx_array) != 1 || ::mxGetN(mx_array) != 1)
+    {
+      MEX_UTILS->set_error("invalid argin specified",
+                           "1-by-1 int array expected for field 'writable'",
+                           "TangoBinding::set_attr_config");
+      SET_DEFAULT_PRHS_THEN_RETURN(kError); 
+    }
+    //- get int from mxArray
+    attrs_config[i].writable = static_cast<Tango::AttrWriteType>(::mxGetScalar(mx_array));
+    //- FIELD: DATA_FORMAT ------------------------------------------------
+    //- struct attr_config[i] should contains a <data_format> field
+    mx_array = ::mxGetField(attr_config, i, "data_format");
+    if (! mx_array) 
+    {
+      MEX_UTILS->set_error("invalid argin specified",
+                           "struct should contain a field named 'data_format'",
+                           "TangoBinding::set_attr_config");
+      SET_DEFAULT_PRHS_THEN_RETURN(kError); 
+    }
+    //- this field must be 1-by-1 int array
+    if (::mxIsNumeric(mx_array) == false || ::mxGetM(mx_array) != 1 || ::mxGetN(mx_array) != 1)
+    {
+      MEX_UTILS->set_error("invalid argin specified",
+                           "1-by-1 int array expected for field 'data_format'",
+                           "TangoBinding::set_attr_config");
+      SET_DEFAULT_PRHS_THEN_RETURN(kError); 
+    }
+    //- get int from mxArray
+    attrs_config[i].data_format = static_cast<Tango::AttrDataFormat>(::mxGetScalar(mx_array));
+    //- FIELD: DATA_TYPE --------------------------------------------------
+    //- struct attr_config[i] should contains a <data_type> field
+    mx_array = ::mxGetField(attr_config, i, "data_type");
+    if (! mx_array) 
+    {
+      MEX_UTILS->set_error("invalid argin specified",
+                           "struct should contain a field named 'data_type'",
+                           "TangoBinding::set_attr_config");
+      SET_DEFAULT_PRHS_THEN_RETURN(kError); 
+    }
+    //- this field must be 1-by-1 int array
+    if (::mxIsNumeric(mx_array) == false || ::mxGetM(mx_array) != 1 || ::mxGetN(mx_array) != 1)
+    {
+      MEX_UTILS->set_error("invalid argin specified",
+                           "1-by-1 int array expected for field 'data_type'",
+                           "TangoBinding::set_attr_config");
+      SET_DEFAULT_PRHS_THEN_RETURN(kError); 
+    }
+    //- get int from mxArray
+    attrs_config[i].data_type = (int)::mxGetScalar(mx_array);
+    //- FIELD: MAX_M ------------------------------------------------------
+    //- struct attr_config[i] should contains a <max_m> field
+    mx_array = ::mxGetField(attr_config, i, "max_m");
+    if (! mx_array) 
+    {
+      MEX_UTILS->set_error("invalid argin specified",
+                           "struct should contain a field named 'max_m'",
+                           "TangoBinding::set_attr_config");
+      SET_DEFAULT_PRHS_THEN_RETURN(kError); 
+    }
+    //- this field must be 1-by-1 int array
+    if (::mxIsNumeric(mx_array) == false || ::mxGetM(mx_array) != 1 || ::mxGetN(mx_array) != 1)
+    {
+      MEX_UTILS->set_error("invalid argin specified",
+                           "1-by-1 int array expected for field 'max_dim_x'",
+                           "TangoBinding::set_attr_config");
+      SET_DEFAULT_PRHS_THEN_RETURN(kError); 
+    }
+    //- get int from mxArray
+    int max_m = (int)::mxGetScalar(mx_array);
+    //- FIELD: MAX_N ------------------------------------------------------
+    //- struct attr_config[i] should contains a <max_n> field
+    mx_array = ::mxGetField(attr_config, i, "max_n");
+    if (! mx_array) 
+    {
+      MEX_UTILS->set_error("invalid argin specified",
+                           "struct should contain a field named 'max_n'",
+                           "TangoBinding::set_attr_config");
+      SET_DEFAULT_PRHS_THEN_RETURN(kError); 
+    }
+    //- this field must be 1-by-1 int array
+    if (::mxIsNumeric(mx_array) == false || ::mxGetM(mx_array) != 1 || ::mxGetN(mx_array) != 1)
+    {
+      MEX_UTILS->set_error("invalid argin specified",
+                           "1-by-1 int array expected for field 'max_n'",
+                           "TangoBinding::set_attr_config");
+      SET_DEFAULT_PRHS_THEN_RETURN(kError); 
+    }
+    //- get int from mxArray
+    int max_n = (int)::mxGetScalar(mx_array);
+    //- set max_dim_x and max_dim_y from max_m and max_n
+    attrs_config[i].max_dim_x = (int)::mxGetScalar(mx_array);
+    attrs_config[i].max_dim_y = (int)::mxGetScalar(mx_array);
+    switch (attrs_config[i].data_format)
+    {
+      case Tango::SCALAR:
+        attrs_config[i].max_dim_x = 1;
+	attrs_config[i].max_dim_y = 0;
+        break;
+      case Tango::SPECTRUM:
+        attrs_config[i].max_dim_x = max_n;
+	attrs_config[i].max_dim_y = 0;
+        break;
+      case Tango::IMAGE:
+        attrs_config[i].max_dim_x = max_m;
+	attrs_config[i].max_dim_y = max_n;
+        break;
+      default:
+        attrs_config[i].max_dim_x = 0;
+	attrs_config[i].max_dim_y = 0;
+        break;
+    }
     //- FIELD: DESCRIPTION ------------------------------------------------
     //- struct attr_config[i] should contains a <description> field
     mx_array = ::mxGetField(attr_config, i, "description");
@@ -3451,7 +3560,7 @@ int TangoBinding::set_attr_config (void)
       SET_DEFAULT_PRHS_THEN_RETURN(kError); 
     }
     //- this field must be 1-by-n char array
-    if (::mxIsChar(mx_array) == false || ::mxGetM(mx_array) != 1)
+    if (::mxIsChar(mx_array) == false)
     {
       MEX_UTILS->set_error("invalid argin specified",
                            "1-by-n char array expected for field 'unit'",
@@ -3680,8 +3789,38 @@ int TangoBinding::set_attr_config (void)
     attrs_config[i].max_alarm = cstr;
     //- free memory
     ::mxFree(cstr);
-    //- FIELD: EXTENSIONS -------------------------------------------------
+    //- FIELD: WRITABLE_ATTR_NAME -----------------------------------------
     //- struct attr_config[i] should contains a <writable_attr_name> field
+    mx_array = ::mxGetField(attr_config, i, "writable_attr_name");
+    if (! mx_array) 
+    {
+      MEX_UTILS->set_error("invalid argin specified",
+                           "struct should contain a field named 'writable_attr_name'",
+                           "TangoBinding::set_attr_config");
+      SET_DEFAULT_PRHS_THEN_RETURN(kError); 
+    }
+    //- this field must be 1-by-n char array
+    if (::mxIsChar(mx_array) == false || ::mxGetM(mx_array) != 1) 
+    {
+      MEX_UTILS->set_error("invalid argin specified",
+                           "1-by-n char array expected for field 'writable_attr_name'",
+                           "TangoBinding::set_attr_config");
+      SET_DEFAULT_PRHS_THEN_RETURN(kError); 
+    }
+    //- get string from mxArray
+    cstr = ::mxArrayToString(mx_array);
+    if (! cstr) 
+    {
+      MEX_UTILS->set_error("internal error", 
+                           "could not extract string from field 'writable_attr_name'",
+                           "TangoBinding::set_attr_config");
+      SET_DEFAULT_PRHS_THEN_RETURN(kError); 
+    }
+    attrs_config[i].writable_attr_name = cstr;
+    //- free memory
+    ::mxFree(cstr);
+    //- FIELD: EXTENSIONS -------------------------------------------------
+    //- struct attr_config[i] should contains a <extension> field
     mx_array = ::mxGetField(attr_config, i, "extensions");
     if (mx_array == 0 || ::mxGetN(mx_array) == 0) 
     {
@@ -3736,6 +3875,26 @@ int TangoBinding::set_attr_config (void)
         ::mxFree(cstr);
       } //- for j ...
     } //- if... else ...  
+    //- FIELD: DISP_LEVEL -------------------------------------------------
+    //- struct attr_config[i] should contains a <disp_level> field
+    mx_array = ::mxGetField(attr_config, i, "disp_level");
+    if (! mx_array) 
+    {
+      MEX_UTILS->set_error("invalid argin specified",
+                           "struct should contain a field named 'disp_level'",
+                           "TangoBinding::set_attr_config");
+      SET_DEFAULT_PRHS_THEN_RETURN(kError); 
+    }
+    //- this field must be 1-by-1 int array
+    if (::mxIsNumeric(mx_array) == false || ::mxGetM(mx_array) != 1 || ::mxGetN(mx_array) != 1)
+    {
+      MEX_UTILS->set_error("invalid argin specified",
+                           "1-by-1 int array expected for field 'disp_level'",
+                           "TangoBinding::set_attr_config");
+      SET_DEFAULT_PRHS_THEN_RETURN(kError); 
+    }
+    //- get int from mxArray
+    attrs_config[i].disp_level = static_cast<Tango::DispLevel>(::mxGetScalar(mx_array));
   } //- for i ...
 
   _TRY(ddesc->proxy()->set_attribute_config(attrs_config), dev, "set_attr_config");
