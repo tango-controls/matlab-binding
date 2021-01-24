@@ -174,7 +174,7 @@ void DeviceDesc::cmd_list (Tango::CommandInfoList* _cmd_list)
 //=============================================================================
 // DeviceDesc::attr_list
 //=============================================================================
-void DeviceDesc::attr_list (Tango::AttributeInfoList* _attr_list)
+void DeviceDesc::attr_list (Tango::AttributeInfoListEx* _attr_list)
 {
   this->dev_attr_list_.clear();
   if (_attr_list == 0) {
@@ -187,6 +187,9 @@ void DeviceDesc::attr_list (Tango::AttributeInfoList* _attr_list)
     this->dev_attr_list_[i].writable = (*_attr_list)[i].writable;
     this->dev_attr_list_[i].data_format = (*_attr_list)[i].data_format;
     this->dev_attr_list_[i].data_type = (*_attr_list)[i].data_type;
+    if ( Tango::DEV_ENUM == (*_attr_list)[i].data_type ) {
+        this->dev_attr_list_[i].enum_labels = (*_attr_list)[i].enum_labels;
+    }
   }
   delete _attr_list;
 }
@@ -302,7 +305,7 @@ DeviceDesc* DevRepository::device_desc (const std::string& _device_name)
   }
   //- get device attributes list 
   try {
-    ddesc->attr_list(ddesc->dev_proxy_->attribute_list_query());  
+    ddesc->attr_list(ddesc->dev_proxy_->attribute_list_query_ex());
   }
   catch (const Tango::DevFailed &e) {
     //--TODO::C++ and Java servers have different behavior!!! 
@@ -397,7 +400,7 @@ DeviceDesc* DevRepository::device_desc (Tango::DeviceProxy *_dp, bool _ownership
   ddesc->dev_proxy_->set_transparency_reconnection(true);
   //- get device attributes list 
   try {
-    ddesc->attr_list(ddesc->dev_proxy_->attribute_list_query());  
+    ddesc->attr_list(ddesc->dev_proxy_->attribute_list_query_ex());
   }
   catch (const Tango::DevFailed &e) {
     //--TODO::C++ and Java servers have different behavior!!! 

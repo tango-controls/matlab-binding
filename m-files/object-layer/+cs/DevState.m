@@ -11,6 +11,7 @@ classdef DevState < uint16
     
     methods(Static,Abstract)
         state=Get(statename)
+        state=Undef(varargin)
     end
     
     methods
@@ -52,6 +53,53 @@ classdef DevState < uint16
             h=patch(position(1)+sz*[-1 1 1 -1 -1],...
                 position(2)+sz*[-1 -1 1 1 -1],...
                 st.color());
+        end
+        function res=times(st1,st2)
+            if ~(isscalar(st1) || isscalar(st2) || all(size(st1)==size(st2)))
+                error('Cs:DevState:size','Matrix dimensions must agree');
+            end
+            if isa(st1,'cs.DevState')
+                res=localtimes(st1,st2);
+            else
+                res=localtimes(st2,st1);
+            end
+            function res=localtimes(st1,coef)
+                if isnumeric(coef)
+                    if isscalar(st1)
+                        res=repmat(st1,size(coef));
+                    elseif iscalar(coef)
+                        coef=repmat(coef,size(st1));
+                        res=st1;
+                    end
+                    res(~(coef==1))=st1.Undef;
+                else
+                    error('Cs:DevState:arith','Impossible operation');
+                end
+            end
+        end
+        function res=mtimes(st1,st2)
+            [m1,n1]=size(st1);
+            [m2,n2]=size(st2);
+            if ~(isscalar(st1) || isscalar(st2) || ((n1==1)&&(m2==1)))
+                error('Cs:DevState:size','Matrix dimensions must agree');
+            end
+            if isa(st1,'cs.DevState')
+                if isnumeric(st2)
+                    ok=(st2==1);
+                    res=st1.Undef(m1,n2);
+                    res(:,ok)=repmat(st1,1,sum(ok));
+                else
+                    error('Cs:DevState:arith','Impossible operation');
+                end
+            else
+                if isnumeric(st1)
+                    ok=(st1==1);
+                    res=st2.Undef(m1,n2);
+                    res(ok,:)=repmat(st2,sum(ok),1);
+                else
+                    error('Cs:DevState:arith','Impossible operation');
+                end
+            end
         end
         function ok=lt(st1,st2)
             ok=st1.severity() < st2.severity();

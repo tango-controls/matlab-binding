@@ -3,7 +3,7 @@ classdef Type < uint8
     
     methods(Static,Access=private,Hidden)
         function uval=undef()
-            uval=cell(1,29);
+            uval=cell(1,30);
             uval(1:9)={[],false,int16(Inf),int32(Inf),single(NaN),NaN,...
                 uint16(Inf),uint32(Inf),''};
             uval{17}={};
@@ -15,7 +15,7 @@ classdef Type < uint8
         function t=isMatrixCompatible(self)
             persistent tab
             if isempty(tab)
-                tab=false(29);
+                tab=false(30);
                 tab([2:8 20 23:25 28 29])=true;
             end
             t=tab(self+1);
@@ -58,6 +58,7 @@ classdef Type < uint8
         DEVVAR_ULONG64ARRAY	(26)
         DEV_INT             (27)
         DEV_ENCODED         (28)
+        DEV_ENUM            (29)
     end
     
 end
