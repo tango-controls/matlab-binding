@@ -23,7 +23,7 @@ classdef Access < handle
     end
     
     methods(Static,Access=protected,Hidden)
-        function attr=attrdefine(attrinfo,pollperiod)
+        function attr = attrdefine(attrinfo, pollperiod)
             attr=rmfield(attrinfo,{'writable','writable_str','data_format',...
                 'data_format_str','data_type','data_type_str'});
             attr.writable=tango.AttrWriteType(attrinfo.writable);
@@ -40,8 +40,13 @@ classdef Access < handle
             else
                 attr.default=[];
             end
+            attr.is_enum = false
             if attr.data_type == tango.Type.DEV_STATE
                 attr.conversion=@(x) tango.DevState.Get(x);
+            elseif attr.data_type == tango.Type.DEV_ENUM
+                attr.is_enum = true
+                attr.enum = tango.DevEnum(attrinfo)
+                %attr.conversion=@(x) tango.DevEnum.Get(x);
             else
                 attr.conversion=@(x) x;
             end
