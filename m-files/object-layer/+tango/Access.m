@@ -23,9 +23,13 @@ classdef Access < handle
     end
     
     methods(Static,Access=protected,Hidden)
-        function attr = attrdefine(attrinfo, pollperiod)
+        function attr=attrdefine(attrinfo,pollperiod)
+            is_enum = false;
+            if size(attrinfo.enum_labels, 1) ~= 0
+            	is_enum = true;
+            end
             attr=rmfield(attrinfo,{'writable','writable_str','data_format',...
-                'data_format_str','data_type','data_type_str'});
+                'data_format_str','data_type','data_type_str', 'enum_labels'});
             attr.writable=tango.AttrWriteType(attrinfo.writable);
             attr.data_format=tango.AttrDataFormat(attrinfo.data_format);
             attr.data_type=tango.Type(attrinfo.data_type);
@@ -35,22 +39,23 @@ classdef Access < handle
             attr.max_value=str2double(attrinfo.max_value);
             attr.min_alarm=str2double(attrinfo.min_alarm);
             attr.max_alarm=str2double(attrinfo.max_alarm);
+            attr.max_alarm=str2double(attrinfo.max_alarm);
             if attr.data_format == tango.AttrDataFormat.SCALAR
                 attr.default=attr.data_type.Undefined();
             else
                 attr.default=[];
             end
-            attr.is_enum = false
             if attr.data_type == tango.Type.DEV_STATE
                 attr.conversion=@(x) tango.DevState.Get(x);
-            elseif attr.data_type == tango.Type.DEV_ENUM
-                attr.is_enum = true
-                attr.enum = tango.DevEnum(attrinfo)
-                %attr.conversion=@(x) tango.DevEnum.Get(x);
             else
                 attr.conversion=@(x) x;
             end
             attr.poll_period=pollperiod;
+            if size(attrinfo.enum_labels, 1) ~= 0
+            	attr.is_enum = true;
+            else
+            	attr.is_enum = false;
+            end
         end
         function val=attrprocess(attrinfo,reply)
             if isempty(reply.error)

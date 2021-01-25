@@ -1,3 +1,4 @@
+
 classdef Base < cs.Device&tango.Access
     %tango.Base: Base class for tango devices and groups
     

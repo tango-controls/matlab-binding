@@ -40,6 +40,9 @@ classdef (ConstructOnLoad) Attribute  < tango.Access
     properties(Dependent=true)
         set         % Setpoint [RW]
     end
+    properties
+        labels=struct()
+    end
     
     methods(Access=protected,Hidden)
         function val=getdt(self,defv)
@@ -114,18 +117,60 @@ classdef (ConstructOnLoad) Attribute  < tango.Access
                     self.dvz(@tango_get_attribute_poll_period,attrname)); %#ok<MCSUP>
                 self.attrname=attrname;
             end
+            if self.attrinfo.is_enum
+            	self.attrinfo.enum = tango.DevEnum(self.devname, self.attrname);
+		        num_labels = size(self.attrinfo.enum.labels, 2);
+		        %addprop(self, 'labels');
+		        %s.type = '.';
+                %s.subs = 'labels';
+                %tmp = subsasgn(self, s, struct());
+          		for l = 1:num_labels
+                    self.labels.(self.attrinfo.enum.labels{l}) = self.attrinfo.enum.values(l);
+	            end
+            end
         end
         function set.set(self,val)
+            if self.attrinfo.is_enum
+                if ischar(val) && ismember(val,self.attrinfo.enum.labels)
+                    val = int16(self.attrinfo.enum.label2value(val));
+                elseif ~ischar(val) && ismember(int16(val),self.attrinfo.enum.values)
+                    val = int16(val);
+                else
+                    format = 'invalid value specified for Tango.DevEnum attribute %s/%s - valid labels are: %s'
+                    labels = strjoin(self.attrinfo.enum.labels, ', ')
+                    sprintf(format, self.devname, self.attrname, labels)  
+                	error(sprintf(format, self.devname, self.attrname, labels)) 
+                	%DOTO:tango.Error(self.devname,func2str(dvfunc),func2str(dvfunc),tango_error_stack).throwAsCaller();
+                end
+            end
             self.dvz(@tango_write_attribute,self.attrinfo.name,val);
         end
         function val=get.set(self)
-            val=self.data.set;
+            if self.attrinfo.is_enum && ~ischar(self.data.set)
+                val=self.attrinfo.enum.value2label(unit32(self.data.set));
+            else
+                val=self.data.set;
+            end
+        end
+        function write(self,val)
+            self.set=val;
         end
         function val=get.data(self)
-            val=self.getdt(self.defval);
+            if self.attrinfo.is_enum
+                tmp=self.getdt(self.defval);
+                tmp.set=self.attrinfo.enum.value2label(tmp.set);
+                tmp.read=self.attrinfo.enum.value2label(tmp.read);
+                val=tmp;
+            else
+                val=self.getdt(self.defval);
+            end
         end
         function val=get.read(self)
-            val=self.data.read;
+            if self.attrinfo.is_enum && ~ischar(self.data.read)
+                val=self.attrinfo.enum.value2label(uint32(self.data.read));
+            else
+                val=self.data.read;
+            end
         end
         function dev=get.device(self)
             dev=tango.Device(self.devname);
@@ -156,12 +201,6 @@ classdef (ConstructOnLoad) Attribute  < tango.Access
             %   get the nb last values stored for the attribute
             reply=self.dvz(@tango_attribute_history,self.attrinfo.name,nb);
             data=arrayfun(@(rep) self.attrprocess(self.attrinfo,rep),reply);
-        end
-        function write(self,val)
-            %attr.write(value)
-            %   set the attribute to the specified value
-            %   equivalent to attr.set=value
-            self.dvz(@tango_write_attribute,self.attrinfo.name,val);
         end
         function strname=char(self)
             %Convert to character array (string)

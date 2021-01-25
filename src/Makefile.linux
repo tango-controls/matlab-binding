@@ -22,24 +22,29 @@
 #------------------------------------------------------------------------------
 
 #------------------------------------------------------------------------------
+# TANGO DIST
+#------------------------------------------------------------------------------
+TANGO_DIST=/operation/control/os/debian9
+
+#------------------------------------------------------------------------------
 # OMNIORB BASE DIR
 #------------------------------------------------------------------------------
-OMNIORB_BASE=/home/informatique/ica/madela/matlab/tango925/root/usr
+OMNIORB_BASE=$(TANGO_DIST)
 
 #------------------------------------------------------------------------------
 # ZMQ_BASE BASE DIR
 #------------------------------------------------------------------------------
-ZMQ_BASE=/home/informatique/ica/madela/matlab/tango925/root/usr
+ZMQ_BASE=$(TANGO_DIST)
 
 #------------------------------------------------------------------------------
 # TANGO BASE DIR
 #------------------------------------------------------------------------------
-TANGO_BASE=/home/informatique/ica/madela/matlab/tango925/root/usr
+TANGO_BASE=$(TANGO_DIST)
 
 #------------------------------------------------------------------------------
 # MATLAB BASE DIR
 #------------------------------------------------------------------------------
-MATLAB_BASE=/usr/Local/matlabR2018b
+MATLAB_BASE=/sware/com/matlab_2020a
 
 #------------------------------------------------------------------------------
 # INCLUDE DIRS
@@ -51,16 +56,11 @@ INCLUDE_DIRS = -I. \
                -I$(MATLAB_BASE)/extern/include
            
 #------------------------------------------------------------------------------
-# LIB DIRS (HERE WE WANT TO COMPIL VS STATIC LIBS)
+# LIB DIRS
 #------------------------------------------------------------------------------
-#LIB_DIRS = -L$(OMNIORB_BASE)/lib/static \
-#           -L$(ZMQ_BASE)/lib/static \
-#           -L$(TANGO_BASE)/lib/static \
-#           -L$(MATLAB_BASE)/bin/glnx86
-#------------------------------------------------------------------------------
-LIB_DIRS = -L$(OMNIORB_BASE)/lib64 \
-           -L$(ZMQ_BASE)/lib64 \
-           -L$(TANGO_BASE)/lib64 \
+LIB_DIRS = -L$(OMNIORB_BASE)/lib \
+           -L$(ZMQ_BASE)/lib \
+           -L$(TANGO_BASE)/lib \
            -L$(MATLAB_BASE)/bin/glnxa64
 
 	 
@@ -117,7 +117,6 @@ OBJS_SO = main.so.o \
 SHARED_LIBS = -lmex \
 	-lmx \
 	-ltango \
-	-llog4tango \
 	-lzmq \
 	-lomniDynamic4 \
 	-lCOS4 \
