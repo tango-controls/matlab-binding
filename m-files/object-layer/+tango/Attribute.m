@@ -115,12 +115,12 @@ classdef (ConstructOnLoad) Attribute  < tango.Access
                 self.attrname=attrname.name;
             else
                 self.attrinfo=self.attrdefine(...
+                    self.devname,...
                     self.dvz(@tango_attribute_query,attrname),...
                     self.dvz(@tango_get_attribute_poll_period,attrname)); %#ok<MCSUP>
                 self.attrname=attrname;
             end
             if self.attrinfo.is_enum
-            	self.attrinfo.enum = tango.DevEnum(self.devname, self.attrname);
 		        num_labels = size(self.attrinfo.enum.labels, 2);
 		        %addprop(self, 'labels');
 		        %s.type = '.';
