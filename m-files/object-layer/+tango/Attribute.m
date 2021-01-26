@@ -36,12 +36,14 @@ classdef (ConstructOnLoad) Attribute  < tango.Access
         device      % Parent device [RO]
         data        % Structure with set,read,time,quality,error fields [RO]
         read        % Read value [RO]
+        read_label  % Returns read (string) label for DEV_ENUM attribute, returns 'read' otherwise [RO]
     end
     properties(Dependent=true)
         set         % Setpoint [RW]
+        set_label   % Returns set (string) label for DEV_ENUM attribute, returns 'set' otherwise [RO]
     end
     properties
-        labels=struct()
+        labels=struct() 
     end
     
     methods(Access=protected,Hidden)
@@ -146,8 +148,11 @@ classdef (ConstructOnLoad) Attribute  < tango.Access
             self.dvz(@tango_write_attribute,self.attrinfo.name,val);
         end
         function val=get.set(self)
-            if self.attrinfo.is_enum && ~ischar(self.data.set)
-                val=self.attrinfo.enum.value2label(unit32(self.data.set));
+            val=self.data.set;
+        end
+        function val=get.set_label(self)
+            if self.attrinfo.is_enum
+                val=self.attrinfo.enum.value2label(self.data.set);
             else
                 val=self.data.set;
             end
@@ -156,18 +161,24 @@ classdef (ConstructOnLoad) Attribute  < tango.Access
             self.set=val;
         end
         function val=get.data(self)
+            val=self.getdt(self.defval);
             if self.attrinfo.is_enum
-                tmp=self.getdt(self.defval);
-                tmp.set=self.attrinfo.enum.value2label(tmp.set);
-                tmp.read=self.attrinfo.enum.value2label(tmp.read);
-                val=tmp;
-            else
-                val=self.getdt(self.defval);
+                s.set = val.set;
+                s.set_label = self.attrinfo.enum.value2label(val.set);
+                s.read = val.read;
+                s.read_label = self.attrinfo.enum.value2label(val.read);
+                s.time = val.time;
+                s.quality = val.quality;
+                s.error = val.error;
+                val = s;
             end
         end
         function val=get.read(self)
-            if self.attrinfo.is_enum && ~ischar(self.data.read)
-                val=self.attrinfo.enum.value2label(uint32(self.data.read));
+            val=self.data.read;
+        end
+        function val=get.read_label(self)
+            if self.attrinfo.is_enum
+                val=self.attrinfo.enum.value2label(self.data.read);
             else
                 val=self.data.read;
             end
