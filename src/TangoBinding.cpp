@@ -775,7 +775,7 @@ int TangoBinding::command_history (void)
   //- fill each struct in the array (one by history entry)
   Tango::TimeVal time;
   mxArray * mx_array = 0;
-  for (int i = 0; i < len; i++) 
+  for (size_t i = 0; i < len; i++) 
   {
     //- argout[i].time
     time = ((*ddhl)[i]).get_date();
@@ -1648,7 +1648,7 @@ int TangoBinding::read_attributes_asynch (void)
   attr_names.resize(n_attrs);
 
   //- fill attr-names
-  for (int i = 0; i < n_attrs; i++) 
+  for (size_t i = 0; i < n_attrs; i++) 
   {
     //- get <i>th cell of the array
     mxArray * cell = ::mxGetCell(attr_list, i);
@@ -2190,7 +2190,7 @@ int TangoBinding::write_attributes (void)
   da_list.resize(n_attrs);
 
   //- get attr/val for each entry in the array
-  for (int i = 0; i < n_attrs; i++) 
+  for (size_t i = 0; i < n_attrs; i++) 
   {
     //- each attr. val. struct should contain a <name> field
     mxArray * mx_attr_name = ::mxGetField(av_list, i, "name");
@@ -2302,7 +2302,7 @@ int TangoBinding::write_attributes_asynch (void)
   da_list.resize(n_attrs);
 
   //- get attr/val for each entry in the array
-  for (int i = 0; i < n_attrs; i++) 
+  for (size_t i = 0; i < n_attrs; i++) 
   {
     //- each attr. val. struct should contain a <name> field
     mxArray * mx_attr_name = ::mxGetField(av_list, i, "name");
@@ -2558,7 +2558,7 @@ int TangoBinding::get_attribute_list (void)
   }
 
   //- copy from src to dest
-  for (int i = 0; i < n_attrs; i++)
+  for (size_t i = 0; i < n_attrs; i++)
     ::mxSetCell(argout, i, ::mxCreateString((*attr_list)[i].c_str()));        
 
   //- release memory (allocated by the Tango API)
@@ -3049,12 +3049,12 @@ int TangoBinding::get_attr_config (void)
     ::mxFree(cstr);
   }
   //- Read requested attribute-config
-  Tango::AttributeInfoList *attr_config = 0;
-  _TRY(attr_config = ddesc->proxy()->get_attribute_config(attr_names), dev, "get_attr_config");
+  Tango::AttributeInfoListEx* attr_config = 0;
+  _TRY(attr_config = ddesc->proxy()->get_attribute_config_ex(attr_names), dev, "get_attr_config_ex");
   if (attr_config == 0)
   {
     MEX_UTILS->set_error("internal error",
-                         "get_attribute_config failed",
+                         "get_attribute_config_ex failed",
                          "TangoBinding::get_attr_config");
     SET_DEFAULT_PRHS_THEN_RETURN(kError); 
   }
@@ -3085,9 +3085,10 @@ int TangoBinding::get_attr_config (void)
      "max_alarm", 
      "writable_attr_name", 
      "extensions", 
-     "disp_level"
+     "disp_level",
+     "enum_labels"
   };
-  mxArray * argout = ::mxCreateStructArray(2, dims, 22, field_names);
+  mxArray * argout = ::mxCreateStructArray(2, dims, 23, field_names);
   if (! argout)
   {
     MEX_UTILS->set_error("out of memory",
@@ -3097,8 +3098,6 @@ int TangoBinding::get_attr_config (void)
     SET_DEFAULT_PRHS_THEN_RETURN(kError); 
   }
   //- Fill each struct in the array
-  int ext_len = 0;
-  mxArray * mx_extensions = 0;
   for (i = 0; i < len; i++)
   {
     //- set field argout[i].name
@@ -3167,6 +3166,9 @@ int TangoBinding::get_attr_config (void)
             break;
           case Tango::DEV_DOUBLE:
             ::mxSetFieldByNumber(argout, i, 6, ::mxCreateString("1-by-1 double"));
+            break;
+          case Tango::DEV_ENUM:
+            ::mxSetFieldByNumber(argout, i, 6, ::mxCreateString("1-by-1 int16"));
             break;
           default:
             ::mxSetFieldByNumber(argout, i, 6, ::mxCreateString("not supported"));
@@ -3257,8 +3259,9 @@ int TangoBinding::get_attr_config (void)
     ::mxSetFieldByNumber(argout, i, 18, ::mxCreateString((*attr_config)[i].max_alarm.c_str()));
     //- set field argout[i].writable_attr_name
     ::mxSetFieldByNumber(argout, i, 19, ::mxCreateString((*attr_config)[i].writable_attr_name.c_str()));
-    //- set field argout[i].extensions - create a 1-by-n cell array 
-    ext_len = (*attr_config)[i].extensions.size();
+    //- set field argout[i].extensions - create a 1-by-n cell array
+    int ext_len = (*attr_config)[i].extensions.size();
+    mxArray * mx_extensions = 0;
     if (ext_len)
     {
       const mwSize dims[2] = {1, static_cast<mwSize>(ext_len)};
@@ -3278,14 +3281,61 @@ int TangoBinding::get_attr_config (void)
         ::mxSetCell(mx_extensions, i, ::mxCreateString((*attr_config)[i].extensions[j].c_str()));
       }
     }
-    else {
-      mx_extensions = 0;
-    }
     ::mxSetFieldByNumber(argout, i, 20, mx_extensions);
     //- set field argout[i].disp_level
     mxArray * mx_disp_level = ::mxCreateDoubleMatrix(1,1,mxREAL);
     ::mxGetPr(mx_disp_level)[0] = (double)(*attr_config)[i].disp_level;
     ::mxSetFieldByNumber(argout, i, 21, mx_disp_level);
+    //-  set enum labels
+    mxArray * mx_enum_labels = 0;
+    if ( Tango::DEV_ENUM == (*attr_config)[i].data_type && (*attr_config)[i].enum_labels.size() )
+    {
+      const char *enum_field_names[] = {"ids", "labels"};
+      mx_enum_labels = ::mxCreateStructArray(2, dims, 2, enum_field_names);
+      if (! mx_enum_labels)
+      {
+        MEX_UTILS->set_error("out of memory",
+                             "mxCreateStructArray failed",
+                             "TangoBinding::get_attr_config");
+        delete attr_config;
+        ::mxDestroyArray(argout);
+        SET_DEFAULT_PRHS_THEN_RETURN(kError);
+      }
+      //- dims of enum 'ids' and 'labels' arrays
+      mwSize mx_labels_dims[2] = {1, (*attr_config)[i].enum_labels.size()};
+      //- ids
+      mxArray* mx_ids = ::mxCreateNumericArray(2, mx_labels_dims, ::mxINT16_CLASS, ::mxREAL);;
+      if (! mx_ids)
+      {
+        MEX_UTILS->set_error("out of memory",
+                             "mxCreateStructArray failed",
+                             "TangoBinding::get_attr_config");
+        delete attr_config;
+        ::mxDestroyArray(argout);
+        SET_DEFAULT_PRHS_THEN_RETURN(kError);
+      }
+      short* mx_ids_data = reinterpret_cast<short*>(mxGetPr(mx_ids));
+      for (size_t l = 0; l <= (*attr_config)[i].enum_labels.size(); l++ ) {
+        mx_ids_data[l] = static_cast<short>(l);
+      }
+      ::mxSetFieldByNumber(mx_enum_labels, 0, 0, mx_ids);
+      //- labels
+      mxArray* mx_labels = ::mxCreateCellArray(2, mx_labels_dims);
+      if (! mx_labels)
+      {
+        MEX_UTILS->set_error("out of memory",
+                             "mxCreateStructArray failed",
+                             "TangoBinding::get_attr_config");
+        delete attr_config;
+        ::mxDestroyArray(argout);
+        SET_DEFAULT_PRHS_THEN_RETURN(kError);
+      }
+      for (size_t l = 0; l < (*attr_config)[i].enum_labels.size(); l++) {
+        ::mxSetCell(mx_labels, l, ::mxCreateString((*attr_config)[i].enum_labels[l].c_str()));
+      }
+      ::mxSetFieldByNumber(mx_enum_labels, 0, 1, mx_labels);
+    }
+    ::mxSetFieldByNumber(argout, i, 22, mx_enum_labels);
   } //- for
   //- Release memory (allocated by TANGO)
   delete attr_config;
@@ -3335,7 +3385,7 @@ int TangoBinding::set_attr_config (void)
   //- each entry in the input array...
   char * cstr = 0;
   mxArray * mx_array = 0;
-  for (int i = 0; i < len; i++) 
+  for (size_t i = 0; i < len; i++) 
   {
     //- FIELD: NAME -------------------------------------------------------
     //- struct attr_config[i] should contains a <name> field
@@ -3560,7 +3610,7 @@ int TangoBinding::set_attr_config (void)
       SET_DEFAULT_PRHS_THEN_RETURN(kError); 
     }
     //- this field must be 1-by-n char array
-    if (::mxIsChar(mx_array) == false)
+    if (::mxIsChar(mx_array) == false || ::mxGetM(mx_array) != 1)
     {
       MEX_UTILS->set_error("invalid argin specified",
                            "1-by-n char array expected for field 'unit'",
@@ -3947,7 +3997,7 @@ int TangoBinding::black_box (void)
                          "TangoBinding::black_box");
     SET_DEFAULT_PRHS_THEN_RETURN(kError); 
   }
-  for (int i = 0; i < len; i++)
+  for (size_t i = 0; i < len; i++)
   {
     ::mxSetCell(argout, i, ::mxCreateString((*bb_vector)[i].c_str()));        
   }
@@ -4020,7 +4070,7 @@ int TangoBinding::command_list_query (void)
     SET_DEFAULT_PRHS_THEN_RETURN(kError); 
   }
   mxArray * mx_array = 0; 
-  for (int i = 0; i < len; i++)
+  for (size_t i = 0; i < len; i++)
   {
     //- set field argout[i].cmd_name
     ::mxSetFieldByNumber(argout, i, 0, ::mxCreateString((*ci_vector)[i].cmd_name.c_str()));
@@ -4986,7 +5036,7 @@ int TangoBinding::get_property (void)
   }
   int n = 0;
   mxArray *mx_array = 0;
-  for (int i = 0; i < len; i++)
+  for (size_t i = 0; i < len; i++)
   {
     //- set field argout[i].name
     ::mxSetFieldByNumber(argout, i, 0, ::mxCreateString(db_data[i].name.c_str()));
@@ -5202,7 +5252,7 @@ int TangoBinding::put_property (void)
   str_values.resize(n);
   char *cstr = 0;
   mxArray * mx_cell = 0;
-  for (int i = 0; i < n; i++)
+  for (size_t i = 0; i < n; i++)
   {
     mx_cell = ::mxGetCell(prop_values, i);
     if (mx_cell == 0)
@@ -7801,7 +7851,7 @@ int TangoBinding::group_read_attribute_reply (void)
   }
   Tango::DevLong tmo = (Tango::DevLong)::mxGetPr(mx_tmo)[0];
   //- get group reference
-  Tango::Group*  g = GRP_REP->get(grp_id);
+  Tango::Group* g = GRP_REP->get(grp_id);
   if (g == 0)
   {
     MEX_UTILS->push_error("failed to execute group_read_attribute_reply",
@@ -7966,7 +8016,7 @@ int TangoBinding::group_read_attributes_asynch (void)
   attr_ids.resize(n_attrs);
 
   //- fill attr-names
-  for (int i = 0; i < n_attrs; i++) 
+  for (size_t i = 0; i < n_attrs; i++) 
   {
     //- get <i>th cell of the array
     mxArray * cell = ::mxGetCell(attr_list, i);
@@ -8309,7 +8359,7 @@ int TangoBinding::group_read_attributes_reply (void)
   _TRY(arl = g->read_attributes_reply(req_id, tmo), g->get_name(), "group_read_attributes_reply");
 
   //- create a 1-by-1 struct array for results
-  double *has_failed2; 
+  double *has_failed2 = 0;
   mwSize dims[2] = {1, 1};
   const char *field_names[] = {"has_failed", "dev_replies"};
   mxArray * main_argout = ::mxCreateStructArray(2, dims, 2, field_names);
@@ -8369,7 +8419,7 @@ int TangoBinding::group_read_attributes_reply (void)
   std::string dev_name("none");
   int cdn = -1;
   int attr_values_idx = -1;
-  double *is_enabled2;
+  double *is_enabled2 = 0;
   for (size_t r = 0; r < arl.size(); r++) 
   {
     //- reach next device?
@@ -8416,7 +8466,7 @@ int TangoBinding::group_read_attributes_reply (void)
         SET_DEFAULT_PRHS_THEN_RETURN(kError);
       }
       ::mxSetFieldByNumber(dev_replies, cdn, 2, mx_array);
-      has_failed2=::mxGetPr(mx_array);
+      has_failed2 =::mxGetPr(mx_array);
 
       //- create dev_replies.attr_values field
       attr_values_array = ::mxCreateStructArray(2, attr_values_dims, 12, attr_values_field_names);

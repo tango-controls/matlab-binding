@@ -62,6 +62,7 @@ public:
 	  Tango::AttrWriteType writable;
 	  Tango::AttrDataFormat data_format;
 	  int data_type;
+	  std::vector<std::string> enum_labels;
   } MinAttrInfo;
   // Used to store locally the mininum required attr info.
 
@@ -122,7 +123,7 @@ private:
   void cmd_list (Tango::CommandInfoList* cmd_list);
   // Set the device commands list.
 
-  void attr_list (Tango::AttributeInfoList* attr_list);
+  void attr_list (Tango::AttributeInfoListEx* attr_list);
   // Set the device attributes list.
 
   std::string dev_name_;

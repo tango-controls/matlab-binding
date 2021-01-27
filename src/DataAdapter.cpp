@@ -15,8 +15,8 @@
 //- DEPENDENCIES
 //=============================================================================
 #if !defined(_WINDOWS)
-#  include <sys/time.h> 
-#endif 
+#  include <sys/time.h>
+#endif
 #include "StandardHeader.h"
 #include "DevRepository.h"
 #include "DataAdapter.h"
@@ -44,8 +44,8 @@
 //- WORKAROUND FOR OLDER MATLAB VERSION
 //=============================================================================
 #if defined (_HAS_NO_MWSIZE_TYPE_)
-typedef int mwSize; 
-#endif 
+typedef int mwSize;
+#endif
 
 //=============================================================================
 //- STATIC MEMBERS
@@ -59,10 +59,10 @@ int DataAdapter::init (void)
 {
   if (DataAdapter::instance_ != 0)
     return 0;
-  
+
   DataAdapter::instance_ = new (std::nothrow) DataAdapter;
-  
-  return (DataAdapter::instance_) ? 0 : -1; 
+
+  return (DataAdapter::instance_) ? 0 : -1;
 }
 
 //=============================================================================
@@ -70,7 +70,7 @@ int DataAdapter::init (void)
 //=============================================================================
 void DataAdapter::cleanup (void)
 {
-  if (DataAdapter::instance_) 
+  if (DataAdapter::instance_)
   {
     delete DataAdapter::instance_;
     DataAdapter::instance_ = 0;
@@ -78,7 +78,7 @@ void DataAdapter::cleanup (void)
 }
 
 //=============================================================================
-//- DataAdapter::DataAdapter 
+//- DataAdapter::DataAdapter
 //=============================================================================
 DataAdapter::DataAdapter (void)
 {
@@ -86,7 +86,7 @@ DataAdapter::DataAdapter (void)
 }
 
 //=============================================================================
-//- DataAdapter::~DataAdapter 
+//- DataAdapter::~DataAdapter
 //=============================================================================
 DataAdapter::~DataAdapter (void)
 {
@@ -96,35 +96,35 @@ DataAdapter::~DataAdapter (void)
 //=============================================================================
 //- DataAdapter::encode_argin
 //=============================================================================
-int DataAdapter::encode_argin (DeviceDesc * _ddesc, 
-                               int _cmd_id, 
+int DataAdapter::encode_argin (DeviceDesc * _ddesc,
+                               int _cmd_id,
                                const mxArray* _argin,
                                Tango::DeviceData & dd_in_)
 {
-  if (_ddesc == 0) 
+  if (_ddesc == 0)
   {
     MEX_UTILS->set_error("internal error",
                          "unexpected NULL argument",
                          "DataAdapter::encode_argin");
     return kError;
   }
-  
-  try 
+
+  try
   {
     int argin_type = (_ddesc->cmd_list())[_cmd_id].in_type;
-    switch (argin_type) 
+    switch (argin_type)
     {
         //-- DEV_VOID ------------------------------------
-      case Tango::DEV_VOID: 
+      case Tango::DEV_VOID:
       {
-        return kNoError; 
+        return kNoError;
       } break;
-        
+
       //-- DEVVAR_LONGSTRINGARRAY ----------------------
-      case Tango::DEVVAR_LONGSTRINGARRAY: 
+      case Tango::DEVVAR_LONGSTRINGARRAY:
       {
         //- check argin type - must be a 1-by-1 struct array
-        if (::mxIsStruct(_argin) == false || ::mxGetM(_argin) != 1 || ::mxGetN(_argin) != 1) 
+        if (::mxIsStruct(_argin) == false || ::mxGetM(_argin) != 1 || ::mxGetN(_argin) != 1)
         {
           MEX_UTILS->set_error("invalid argin specified",
                                "1-by-1 struct array expected",
@@ -133,14 +133,14 @@ int DataAdapter::encode_argin (DeviceDesc * _ddesc,
         }
         //- the struct should contains a <lvalue> field containing a 1-by-n int32 array
         mxArray * lvalue = ::mxGetField(_argin, 0, "lvalue");
-        if (lvalue == 0) 
+        if (lvalue == 0)
         {
           MEX_UTILS->set_error("invalid argin specified",
                                "struct should contain a struct field named 'lvalue'",
                                "DataAdapter::encode_argin");
           return kError;
         }
-        if (::mxIsInt32(lvalue) == false || ::mxGetM(lvalue) != 1) 
+        if (::mxIsInt32(lvalue) == false || ::mxGetM(lvalue) != 1)
         {
           MEX_UTILS->set_error("invalid argin specified",
                                "1-by-n int32 array expected for struct field 'lvalue'",
@@ -149,14 +149,14 @@ int DataAdapter::encode_argin (DeviceDesc * _ddesc,
         }
         //- the struct should contains a <svalue> field containing a 1-by-n cell array
         mxArray * svalue = ::mxGetField(_argin, 0, "svalue");
-        if (svalue == 0) 
+        if (svalue == 0)
         {
           MEX_UTILS->set_error("invalid argin specified",
                                "struct should contain a struct field named 'svalue'",
                                "DataAdapter::encode_argin");
           return kError;
         }
-        if (::mxIsCell(svalue) == false || ::mxGetM(svalue) != 1) 
+        if (::mxIsCell(svalue) == false || ::mxGetM(svalue) != 1)
         {
           MEX_UTILS->set_error("invalid argin specified",
                                "1-by-n cell array expected for struct field 'svalue'",
@@ -165,25 +165,25 @@ int DataAdapter::encode_argin (DeviceDesc * _ddesc,
         }
         //- create a DevVarLongStringArray
         Tango::DevVarLongStringArray * dest = new (std::nothrow) Tango::DevVarLongStringArray;
-        if (dest == 0) 
+        if (dest == 0)
         {
           MEX_UTILS->set_error("out of memory",
                                "Tango::DevVarLongStringArray allocation failed",
                                "DataAdapter::encode_argin");
           return kError;
         }
-        //- store lvalue into the numeric part of the DevVarLongStringArray  
-        size_t len = ::mxGetN(lvalue); 
+        //- store lvalue into the numeric part of the DevVarLongStringArray
+        size_t len = ::mxGetN(lvalue);
         dest->lvalue.length(len);
         ::memcpy(dest->lvalue.get_buffer(), ::mxGetData(lvalue), len * sizeof(Tango::DevLong));
         //- store svalue into the string part of the DevVarLongStringArray
-        len = ::mxGetN(svalue); 
+        len = ::mxGetN(svalue);
         dest->svalue.length(len);
-        for (size_t i = 0; i < len; i++) 
+        for (size_t i = 0; i < len; i++)
         {
           //- get <i>th cell of the array
           mxArray * cell = ::mxGetCell(svalue, i);
-          if (cell == 0) 
+          if (cell == 0)
           {
             MEX_UTILS->set_error("internal error",
                                  "unexpected NULL cell",
@@ -192,7 +192,7 @@ int DataAdapter::encode_argin (DeviceDesc * _ddesc,
             return kError;
           }
           //- cell should contain a string
-          if (::mxIsChar(cell) == false) 
+          if (::mxIsChar(cell) == false)
           {
             MEX_UTILS->set_error("internal error",
                                  "unexpected cell content (string expected)",
@@ -202,10 +202,10 @@ int DataAdapter::encode_argin (DeviceDesc * _ddesc,
           }
           //- get c-string from matlab char array.
           char * cstr = ::mxArrayToString(cell);
-          if (cstr == 0) 
+          if (cstr == 0)
           {
-            MEX_UTILS->set_error("internal error", 
-                                 "could not extract string from cell", 
+            MEX_UTILS->set_error("internal error",
+                                 "could not extract string from cell",
                                  "DataAdapter::encode_argin");
             delete dest;
             return kError;
@@ -218,12 +218,12 @@ int DataAdapter::encode_argin (DeviceDesc * _ddesc,
           //- now insert the Tango::DevVarLongStringArray into the Tango::DeviceData
         dd_in_ << dest;
       } break;
-        
+
       //-- DEVVAR_DOUBLESTRINGARRAY --------------------
-      case Tango::DEVVAR_DOUBLESTRINGARRAY: 
+      case Tango::DEVVAR_DOUBLESTRINGARRAY:
       {
         //- check argin type - must be a 1x1 struct array
-        if (::mxIsStruct(_argin) == false || ::mxGetM(_argin) != 1 || ::mxGetN(_argin) != 1) 
+        if (::mxIsStruct(_argin) == false || ::mxGetM(_argin) != 1 || ::mxGetN(_argin) != 1)
         {
           MEX_UTILS->set_error("invalid argin specified",
                                "1x1 struct array expected",
@@ -232,14 +232,14 @@ int DataAdapter::encode_argin (DeviceDesc * _ddesc,
         }
         //- the struct should contains a <dvalue> field containing a 1-by-n double array
         mxArray * dvalue = ::mxGetField(_argin, 0, "dvalue");
-        if (dvalue == 0) 
+        if (dvalue == 0)
         {
           MEX_UTILS->set_error("invalid argin specified",
                                "struct should contain a field named 'dvalue'",
                                "DataAdapter::encode_argin");
           return kError;
         }
-        if (::mxIsDouble(dvalue) == false || ::mxGetM(dvalue) != 1) 
+        if (::mxIsDouble(dvalue) == false || ::mxGetM(dvalue) != 1)
         {
           MEX_UTILS->set_error("invalid argin specified",
                                "1-by-n double array expected for field 'dvalue'",
@@ -248,14 +248,14 @@ int DataAdapter::encode_argin (DeviceDesc * _ddesc,
         }
         //- the struct should contains a <svalue> field containing a 1-by-n cell array
         mxArray * svalue = ::mxGetField(_argin, 0, "svalue");
-        if (svalue == 0) 
+        if (svalue == 0)
         {
           MEX_UTILS->set_error("invalid argin specified",
                                "struct should contain a field named 'svalue'",
                                "DataAdapter::encode_argin");
           return kError;
         }
-        if (::mxIsCell(svalue) == false || ::mxGetM(svalue) != 1) 
+        if (::mxIsCell(svalue) == false || ::mxGetM(svalue) != 1)
         {
           MEX_UTILS->set_error("invalid argin specified",
                                "1-by-n cell array expected for field 'svalue'",
@@ -264,25 +264,25 @@ int DataAdapter::encode_argin (DeviceDesc * _ddesc,
         }
         //- create a DevVarDoubleStringArray
         Tango::DevVarDoubleStringArray * dest = new (std::nothrow) Tango::DevVarDoubleStringArray;
-        if (dest == 0) 
+        if (dest == 0)
         {
           MEX_UTILS->set_error("out of memory",
                                "Tango::DevVarDoubleStringArray allocation failed",
                                "DataAdapter::encode_argin");
           return kError;
         }
-        //- store dvalue into the numeric part of the DevVarDoubleStringArray  
-        size_t len = ::mxGetN(dvalue); 
+        //- store dvalue into the numeric part of the DevVarDoubleStringArray
+        size_t len = ::mxGetN(dvalue);
         dest->dvalue.length(len);
         ::memcpy(dest->dvalue.get_buffer(), ::mxGetData(dvalue), len * sizeof(Tango::DevDouble));
         //- store svalue into the string part of the DevVarDoubleStringArray
-        len = ::mxGetN(svalue); 
+        len = ::mxGetN(svalue);
         dest->svalue.length(len);
-        for (size_t i = 0; i < len; i++) 
+        for (size_t i = 0; i < len; i++)
         {
           //- get <i>th cell of the array
           mxArray * cell = ::mxGetCell(svalue, i);
-          if (cell == 0) 
+          if (cell == 0)
           {
             MEX_UTILS->set_error("internal error",
                                  "unexpected NULL cell",
@@ -291,7 +291,7 @@ int DataAdapter::encode_argin (DeviceDesc * _ddesc,
             return kError;
           }
           //- cell should contain a string
-          if (::mxIsChar(cell) == false) 
+          if (::mxIsChar(cell) == false)
           {
             MEX_UTILS->set_error("internal error",
                                  "unexpected cell content (string expected)",
@@ -301,10 +301,10 @@ int DataAdapter::encode_argin (DeviceDesc * _ddesc,
           }
           //- get c-string from matlab char array.
           char * cstr = ::mxArrayToString(cell);
-          if (cstr == 0) 
+          if (cstr == 0)
           {
-            MEX_UTILS->set_error("internal error", 
-                                 "could not extract string from cell", 
+            MEX_UTILS->set_error("internal error",
+                                 "could not extract string from cell",
                                  "DataAdapter::encode_argin");
             delete dest;
             return kError;
@@ -317,12 +317,12 @@ int DataAdapter::encode_argin (DeviceDesc * _ddesc,
           //- now insert the Tango::DevVarLongStringArray into the Tango::DeviceData
         dd_in_ << dest;
       } break;
-        
+
       //-- DEVVAR_STRINGARRAY --------------------------
-      case Tango::DEVVAR_STRINGARRAY: 
+      case Tango::DEVVAR_STRINGARRAY:
       {
         //- check argin type - must be a 1-by-n cell array
-        if (::mxIsCell(_argin) == false || ::mxGetM(_argin) != 1) 
+        if (::mxIsCell(_argin) == false || ::mxGetM(_argin) != 1)
         {
           MEX_UTILS->set_error("invalid argin specified",
                                "1-by-n cell array expected",
@@ -331,7 +331,7 @@ int DataAdapter::encode_argin (DeviceDesc * _ddesc,
         }
         //- create a DevVarStringArray
         Tango::DevVarStringArray* dest = new (std::nothrow) Tango::DevVarStringArray;
-        if (dest == 0) 
+        if (dest == 0)
         {
           MEX_UTILS->set_error("out of memory",
                                "Tango::DevVarStringArray allocation failed",
@@ -339,13 +339,13 @@ int DataAdapter::encode_argin (DeviceDesc * _ddesc,
           return kError;
         }
         //- populate the DevVarLongStringArray
-        size_t len = ::mxGetN(_argin); 
+        size_t len = ::mxGetN(_argin);
         dest->length(len);
-        for (size_t i = 0; i < len; i++) 
+        for (size_t i = 0; i < len; i++)
         {
-          //- get <i>th cell of the array   
+          //- get <i>th cell of the array
           mxArray * cell = ::mxGetCell(_argin, i);
-          if (cell == 0) 
+          if (cell == 0)
           {
             MEX_UTILS->set_error("internal error",
                                  "unexpected NULL cell",
@@ -354,7 +354,7 @@ int DataAdapter::encode_argin (DeviceDesc * _ddesc,
             return kError;
           }
           //- cell should contain a string
-          if (::mxIsChar(cell) == false) 
+          if (::mxIsChar(cell) == false)
           {
             MEX_UTILS->set_error("internal error",
                                  "unexpected cell content (string expected)",
@@ -364,10 +364,10 @@ int DataAdapter::encode_argin (DeviceDesc * _ddesc,
           }
           //- get c-string from matlab char array.
           char* cstr = ::mxArrayToString(cell);
-          if (cstr == 0) 
+          if (cstr == 0)
           {
-            MEX_UTILS->set_error("internal error", 
-                                 "could not extract string from cell", 
+            MEX_UTILS->set_error("internal error",
+                                 "could not extract string from cell",
                                  "DataAdapter::encode_argin");
             delete dest;
             return kError;
@@ -380,12 +380,12 @@ int DataAdapter::encode_argin (DeviceDesc * _ddesc,
           //- now insert the Tango::DevVarStringArray into the Tango::DeviceData
         dd_in_ << dest;
       } break;
-        
+
       //-- DEVVAR_DOUBLEARRAY --------------------------
-      case Tango::DEVVAR_DOUBLEARRAY: 
+      case Tango::DEVVAR_DOUBLEARRAY:
       {
         //- check argin type - must be a 1-by-n double array
-        if (::mxIsDouble(_argin) == false || ::mxGetM(_argin) != 1) 
+        if (::mxIsDouble(_argin) == false || ::mxGetM(_argin) != 1)
         {
           MEX_UTILS->set_error("invalid argin specified",
                                "1-by-n double array expected",
@@ -394,7 +394,7 @@ int DataAdapter::encode_argin (DeviceDesc * _ddesc,
         }
         //- create a DevVarDoubleArray
         Tango::DevVarDoubleArray* dest = new (std::nothrow) Tango::DevVarDoubleArray;
-        if (dest == 0) 
+        if (dest == 0)
         {
           MEX_UTILS->set_error("out of memory",
                                "Tango::DevVarDoubleArray allocation failed",
@@ -402,18 +402,18 @@ int DataAdapter::encode_argin (DeviceDesc * _ddesc,
           return kError;
         }
         //- populate the DevVarDoubleArray
-        size_t len = ::mxGetN(_argin); 
+        size_t len = ::mxGetN(_argin);
         dest->length(len);
         ::memcpy(dest->get_buffer(), ::mxGetData(_argin), len * sizeof(Tango::DevDouble));
         //- now insert the Tango::DevVarDoubleArray into the Tango::DeviceData
         dd_in_ << dest;
       } break;
-        
+
       //-- DEVVAR_FLOATARRAY ---------------------------
-      case Tango::DEVVAR_FLOATARRAY: 
+      case Tango::DEVVAR_FLOATARRAY:
       {
         //- check argin type - must be a 1-by-n float array
-        if (::mxIsSingle(_argin) == false || ::mxGetM(_argin) != 1) 
+        if (::mxIsSingle(_argin) == false || ::mxGetM(_argin) != 1)
         {
           MEX_UTILS->set_error("invalid argin specified",
                                "1-by-n single array expected",
@@ -422,7 +422,7 @@ int DataAdapter::encode_argin (DeviceDesc * _ddesc,
         }
         //- create a DevVarFloatArray
         Tango::DevVarFloatArray* dest = new (std::nothrow) Tango::DevVarFloatArray;
-        if (dest == 0) 
+        if (dest == 0)
         {
           MEX_UTILS->set_error("out of memory",
                                "Tango::DevVarFloatArray allocation failed",
@@ -430,20 +430,20 @@ int DataAdapter::encode_argin (DeviceDesc * _ddesc,
           return kError;
         }
         //- populate the DevVarFloatArray
-        size_t len = ::mxGetN(_argin); 
+        size_t len = ::mxGetN(_argin);
         dest->length(len);
         ::memcpy(dest->get_buffer(), ::mxGetData(_argin), len * sizeof(Tango::DevFloat));
         //- now insert the Tango::DevVarFloatArray into the Tango::DeviceData
         dd_in_ << dest;
-      } 
+      }
         break;
-        
+
         //-- DEVVAR_ULONG64ARRAY -------------------------
-      case Tango::DEVVAR_ULONG64ARRAY: 
+      case Tango::DEVVAR_ULONG64ARRAY:
       {
 #if ! defined (SCILAB)
         //- check argin type - must be a 1-by-n uint64 array
-        if (::mxIsUint64(_argin) == false || ::mxGetM(_argin) != 1) 
+        if (::mxIsUint64(_argin) == false || ::mxGetM(_argin) != 1)
         {
           MEX_UTILS->set_error("invalid argin specified",
                                "1-by-n uint64 array expected",
@@ -452,7 +452,7 @@ int DataAdapter::encode_argin (DeviceDesc * _ddesc,
         }
         //- create a DevVarULong64Array
         Tango::DevVarULong64Array* dest = new (std::nothrow) Tango::DevVarULong64Array;
-        if (dest == 0) 
+        if (dest == 0)
         {
           MEX_UTILS->set_error("out of memory",
                                "Tango::DevVarULong64Array allocation failed",
@@ -460,7 +460,7 @@ int DataAdapter::encode_argin (DeviceDesc * _ddesc,
           return kError;
         }
         //- populate the DevVarULong64Array
-        size_t len = ::mxGetN(_argin); 
+        size_t len = ::mxGetN(_argin);
         dest->length(len);
         ::memcpy(dest->get_buffer(), ::mxGetData(_argin), len * sizeof(Tango::DevULong64));
         //- now insert the Tango::DevVarULong64Array into the Tango::DeviceData
@@ -472,13 +472,13 @@ int DataAdapter::encode_argin (DeviceDesc * _ddesc,
         return kError;
 #endif
       } break;
-        
+
       //-- DEVVAR_LONG64ARRAY -------------------------
-      case Tango::DEVVAR_LONG64ARRAY: 
+      case Tango::DEVVAR_LONG64ARRAY:
       {
 #if ! defined (SCILAB)
         //- check argin type - must be a 1-by-n int64 array
-        if (::mxIsInt64(_argin) == false || ::mxGetM(_argin) != 1) 
+        if (::mxIsInt64(_argin) == false || ::mxGetM(_argin) != 1)
         {
           MEX_UTILS->set_error("invalid argin specified",
                                "1-by-n int64 array expected",
@@ -487,7 +487,7 @@ int DataAdapter::encode_argin (DeviceDesc * _ddesc,
         }
         //- create a DevVarLong64Array
         Tango::DevVarLong64Array* dest = new (std::nothrow) Tango::DevVarLong64Array;
-        if (dest == 0) 
+        if (dest == 0)
         {
           MEX_UTILS->set_error("out of memory",
                                "Tango::DevVarLong64Array allocation failed",
@@ -495,7 +495,7 @@ int DataAdapter::encode_argin (DeviceDesc * _ddesc,
           return kError;
         }
         //- populate the DevVarLong64Array
-        size_t len = ::mxGetN(_argin); 
+        size_t len = ::mxGetN(_argin);
         dest->length(len);
         ::memcpy(dest->get_buffer(), ::mxGetData(_argin), len * sizeof(Tango::DevLong64));
         //- now insert the Tango::DevVarLong64Array into the Tango::DeviceData
@@ -507,12 +507,12 @@ int DataAdapter::encode_argin (DeviceDesc * _ddesc,
         return kError;
 #endif
       } break;
-        
+
       //-- DEVVAR_ULONGARRAY ---------------------------
-      case Tango::DEVVAR_ULONGARRAY: 
+      case Tango::DEVVAR_ULONGARRAY:
       {
         //- check argin type - must be a 1-by-n uint32 array
-        if (::mxIsUint32(_argin) == false || ::mxGetM(_argin) != 1) 
+        if (::mxIsUint32(_argin) == false || ::mxGetM(_argin) != 1)
         {
           MEX_UTILS->set_error("invalid argin specified",
                                "1-by-n uint32 array expected",
@@ -521,7 +521,7 @@ int DataAdapter::encode_argin (DeviceDesc * _ddesc,
         }
         //- create a DevVarULongArray
         Tango::DevVarULongArray* dest = new (std::nothrow) Tango::DevVarULongArray;
-        if (dest == 0) 
+        if (dest == 0)
         {
           MEX_UTILS->set_error("out of memory",
                                "Tango::DevVarULongArray allocation failed",
@@ -529,18 +529,18 @@ int DataAdapter::encode_argin (DeviceDesc * _ddesc,
           return kError;
         }
         //- populate the DevVarULongArray
-        size_t len = ::mxGetN(_argin); 
+        size_t len = ::mxGetN(_argin);
         dest->length(len);
         ::memcpy(dest->get_buffer(), ::mxGetData(_argin), len * sizeof(Tango::DevULong));
         //- now insert the Tango::DevVarULongArray into the Tango::DeviceData
         dd_in_ << dest;
       } break;
-        
+
       //-- DEVVAR_LONGARRAY ---------------------------
-      case Tango::DEVVAR_LONGARRAY: 
+      case Tango::DEVVAR_LONGARRAY:
       {
         //- check argin type - must be a 1-by-n int32 array
-        if (::mxIsInt32(_argin) == false || ::mxGetM(_argin) != 1) 
+        if (::mxIsInt32(_argin) == false || ::mxGetM(_argin) != 1)
         {
           MEX_UTILS->set_error("invalid argin specified",
                                "1-by-n int32 array expected",
@@ -549,7 +549,7 @@ int DataAdapter::encode_argin (DeviceDesc * _ddesc,
         }
         //- create a DevVarLongArray
         Tango::DevVarLongArray* dest = new (std::nothrow) Tango::DevVarLongArray;
-        if (dest == 0) 
+        if (dest == 0)
         {
           MEX_UTILS->set_error("out of memory",
                                "Tango::DevVarLongArray allocation failed",
@@ -557,18 +557,18 @@ int DataAdapter::encode_argin (DeviceDesc * _ddesc,
           return kError;
         }
         //- populate the DevVarLongArray
-        size_t len = ::mxGetN(_argin); 
+        size_t len = ::mxGetN(_argin);
         dest->length(len);
         ::memcpy(dest->get_buffer(), ::mxGetData(_argin), len * sizeof(Tango::DevLong));
         //- now insert the Tango::DevVarLongArray into the Tango::DeviceData
         dd_in_ << dest;
       } break;
-        
+
       //-- DEVVAR_USHORTARRAY --------------------------
-      case Tango::DEVVAR_USHORTARRAY: 
+      case Tango::DEVVAR_USHORTARRAY:
       {
         //- check argin type - must be a 1-by-n uint16 array
-        if (::mxIsUint16(_argin) == false || ::mxGetM(_argin) != 1) 
+        if (::mxIsUint16(_argin) == false || ::mxGetM(_argin) != 1)
         {
           MEX_UTILS->set_error("invalid argin specified",
                                "1-by-n uint16 array expected",
@@ -577,7 +577,7 @@ int DataAdapter::encode_argin (DeviceDesc * _ddesc,
         }
         //- create a DevVarUShortArray
         Tango::DevVarUShortArray* dest = new (std::nothrow) Tango::DevVarUShortArray;
-        if (dest == 0) 
+        if (dest == 0)
         {
           MEX_UTILS->set_error("out of memory",
                                "Tango::DevVarUShortArray allocation failed",
@@ -585,18 +585,18 @@ int DataAdapter::encode_argin (DeviceDesc * _ddesc,
           return kError;
         }
         //- populate the DevVarUShortArray
-        size_t len = ::mxGetN(_argin); 
+        size_t len = ::mxGetN(_argin);
         dest->length(len);
         ::memcpy(dest->get_buffer(), ::mxGetData(_argin), len * sizeof(Tango::DevUShort));
         //- now insert the Tango::DevVarUShortArray into the Tango::DeviceData
         dd_in_ << dest;
       } break;
-        
+
       //-- DEVVAR_SHORTARRAY ---------------------------
-      case Tango::DEVVAR_SHORTARRAY: 
+      case Tango::DEVVAR_SHORTARRAY:
       {
         //- check argin type - must be a 1-by-n int16 array
-        if (::mxIsInt16(_argin) == false || ::mxGetM(_argin) != 1) 
+        if (::mxIsInt16(_argin) == false || ::mxGetM(_argin) != 1)
         {
           MEX_UTILS->set_error("invalid argin specified",
                                "1-by-n int16 array expected",
@@ -605,7 +605,7 @@ int DataAdapter::encode_argin (DeviceDesc * _ddesc,
         }
         //- create a DevVarShortArray
         Tango::DevVarShortArray* dest = new (std::nothrow) Tango::DevVarShortArray;
-        if (dest == 0) 
+        if (dest == 0)
         {
           MEX_UTILS->set_error("out of memory",
                                "Tango::DevVarShortArray allocation failed",
@@ -613,18 +613,18 @@ int DataAdapter::encode_argin (DeviceDesc * _ddesc,
           return kError;
         }
         //- populate the DevVarShortArray
-        size_t len = ::mxGetN(_argin); 
+        size_t len = ::mxGetN(_argin);
         dest->length(len);
         ::memcpy(dest->get_buffer(), ::mxGetData(_argin), len * sizeof(Tango::DevShort));
         //- now insert the Tango::DevVarShortArray into the Tango::DeviceData
         dd_in_ << dest;
       } break;
-        
+
       //-- DEVVAR_CHARARRAY
-      case Tango::DEVVAR_CHARARRAY: 
+      case Tango::DEVVAR_CHARARRAY:
       {
         //- check argin type - must be a 1-by-n char array
-        if ((::mxIsUint8(_argin) == false && ::mxIsInt8(_argin) == false) || ::mxGetM(_argin) != 1) 
+        if ((::mxIsUint8(_argin) == false && ::mxIsInt8(_argin) == false) || ::mxGetM(_argin) != 1)
         {
           MEX_UTILS->set_error("invalid argin specified",
                                "1-by-n char array expected",
@@ -633,7 +633,7 @@ int DataAdapter::encode_argin (DeviceDesc * _ddesc,
         }
         //- create a DevVarCharArray
         Tango::DevVarCharArray* dest = new (std::nothrow) Tango::DevVarCharArray;
-        if (dest == 0) 
+        if (dest == 0)
         {
           MEX_UTILS->set_error("out of memory",
                                "Tango::DevVarCharArray allocation failed",
@@ -641,55 +641,55 @@ int DataAdapter::encode_argin (DeviceDesc * _ddesc,
           return kError;
         }
         //- populate the DevVarCharArray
-        size_t len = ::mxGetN(_argin); 
+        size_t len = ::mxGetN(_argin);
         dest->length(len);
         ::memcpy(dest->get_buffer(), ::mxGetData(_argin), len * sizeof(Tango::DevUChar));
         //- now insert the Tango::DevVarChartArray into the Tango::DeviceData
         dd_in_ << dest;
       } break;
-        
+
       //-- DEV_STATE -----------------------------------
-      case Tango::DEV_STATE: 
+      case Tango::DEV_STATE:
       {
         MEX_UTILS->set_error("internal error",
                              "unsupported argin type (DEV_STATE)",
                              "DataAdapter::encode_argin");
-        return kError;  
+        return kError;
       } break;
-        
+
       //-- CONST_DEV_STRING ----------------------------
-      case Tango::CONST_DEV_STRING: 
+      case Tango::CONST_DEV_STRING:
       {
         MEX_UTILS->set_error("internal error",
                              "unsupported argin type (CONST_DEV_STRING)",
                              "DataAdapter::encode_argin");
-        return kError;  
+        return kError;
       } break;
-        
+
       //-- DEV_STRING ----------------------------------
-      case Tango::DEV_STRING: 
+      case Tango::DEV_STRING:
       {
         //- check argin type - must be a 1-by-n char array
-        if (::mxIsChar(_argin) == false || ::mxGetM(_argin) != 1) 
+        if (::mxIsChar(_argin) == false || ::mxGetM(_argin) != 1)
         {
           MEX_UTILS->set_error("invalid argin specified",
                                "1-by-n char array expected",
                                "DataAdapter::encode_argin");
           return kError;
         }
-        //- get c-string from Matlab array 
+        //- get c-string from Matlab array
         char* cstr = ::mxArrayToString(_argin);
         //- now insert the c-string into the Tango::DeviceData
         dd_in_ << cstr;
         //- release allocated memory
         ::mxFree(cstr);
       } break;
-        
+
       //-- DEV_BOOLEAN ---------------------------------
-      case Tango::DEV_BOOLEAN: 
+      case Tango::DEV_BOOLEAN:
       {
         //- check argin type - must be a 1-by-1 uint8 array
-        if (::MXISBOOLEAN(_argin) == false || ::mxGetM(_argin) != 1 || ::mxGetN(_argin) != 1) 
+        if (::MXISBOOLEAN(_argin) == false || ::mxGetM(_argin) != 1 || ::mxGetN(_argin) != 1)
         {
           MEX_UTILS->set_error("invalid argin specified",
                                "1-by-1 " BOOLEANTYPE " array expected (boolean mapping)",
@@ -699,12 +699,12 @@ int DataAdapter::encode_argin (DeviceDesc * _ddesc,
         //- now insert the bool into the Tango::DeviceData
         dd_in_ << (*((MXBOOLEAN*)::mxGetData(_argin)) ? true : false);
       } break;
-        
-      //-- DEV_SHORT -----------------------------------
-      case Tango::DEV_USHORT: 
+
+      //-- DEV_USHORT -----------------------------------
+      case Tango::DEV_USHORT:
       {
         //- check argin type - must be a 1-by-1 uint16 array
-        if (::mxIsUint16(_argin) == false || ::mxGetM(_argin) != 1 || ::mxGetN(_argin) != 1) 
+        if (::mxIsUint16(_argin) == false || ::mxGetM(_argin) != 1 || ::mxGetN(_argin) != 1)
         {
           MEX_UTILS->set_error("invalid argin specified",
                                "1-by-1 uint16 array expected",
@@ -714,12 +714,12 @@ int DataAdapter::encode_argin (DeviceDesc * _ddesc,
         //- now insert the unsigned short into the Tango::DeviceData
         dd_in_ << *((Tango::DevUShort*)::mxGetData(_argin));
       } break;
-        
+
       //-- DEV_SHORT -----------------------------------
-      case Tango::DEV_SHORT: 
+      case Tango::DEV_SHORT:
       {
         //- check argin type - must be a 1-by-1 int16 array
-        if (::mxIsInt16(_argin) == false || ::mxGetM(_argin) != 1 || ::mxGetN(_argin) != 1) 
+        if (::mxIsInt16(_argin) == false || ::mxGetM(_argin) != 1 || ::mxGetN(_argin) != 1)
         {
           MEX_UTILS->set_error("invalid argin specified",
                                "1-by-1 int16 array expected",
@@ -729,13 +729,13 @@ int DataAdapter::encode_argin (DeviceDesc * _ddesc,
         //- now insert the short into the Tango::DeviceData
         dd_in_ << *((Tango::DevShort*)::mxGetData(_argin));
       } break;
-        
+
       //-- DEV_ULONG64 ---------------------------------
-      case Tango::DEV_ULONG64: 
+      case Tango::DEV_ULONG64:
       {
 #if ! defined(SCILAB)
         //- check argin type - must be a 1-by-1 uint64 array
-        if (::mxIsUint64(_argin) == false || ::mxGetM(_argin) != 1 || ::mxGetN(_argin) != 1) 
+        if (::mxIsUint64(_argin) == false || ::mxGetM(_argin) != 1 || ::mxGetN(_argin) != 1)
         {
           MEX_UTILS->set_error("invalid argin specified",
                                "1-by-1 uint64 array expected",
@@ -751,13 +751,13 @@ int DataAdapter::encode_argin (DeviceDesc * _ddesc,
         return kError;
 #endif
       } break;
-        
+
       //-- DEV_LONG64 ----------------------------------
-      case Tango::DEV_LONG64: 
+      case Tango::DEV_LONG64:
       {
 #if ! defined(SCILAB)
         //- check argin type - must be a 1-by-1 int64 array
-        if (::mxIsInt64(_argin) == false || ::mxGetM(_argin) != 1 || ::mxGetN(_argin) != 1) 
+        if (::mxIsInt64(_argin) == false || ::mxGetM(_argin) != 1 || ::mxGetN(_argin) != 1)
         {
           MEX_UTILS->set_error("invalid argin specified",
                                "1-by-1 int64 array expected",
@@ -773,12 +773,12 @@ int DataAdapter::encode_argin (DeviceDesc * _ddesc,
         return kError;
 #endif
       } break;
-        
+
       //-- DEV_ULONG -----------------------------------
-      case Tango::DEV_ULONG: 
+      case Tango::DEV_ULONG:
       {
         //- check argin type - must be a 1-by-1 uint32 array
-        if (::mxIsUint32(_argin) == false || ::mxGetM(_argin) != 1 || ::mxGetN(_argin) != 1) 
+        if (::mxIsUint32(_argin) == false || ::mxGetM(_argin) != 1 || ::mxGetN(_argin) != 1)
         {
           MEX_UTILS->set_error("invalid argin specified",
                                "1-by-1 uint32 array expected",
@@ -788,12 +788,12 @@ int DataAdapter::encode_argin (DeviceDesc * _ddesc,
         //- now insert the unsigned long into the Tango::DeviceData
         dd_in_ << *((Tango::DevULong*)::mxGetData(_argin));
       } break;
-        
+
       //-- DEV_LONG ------------------------------------
-      case Tango::DEV_LONG: 
+      case Tango::DEV_LONG:
       {
         //- check argin type - must be a 1-by-1 int32 array
-        if (::mxIsInt32(_argin) == false || ::mxGetM(_argin) != 1 || ::mxGetN(_argin) != 1) 
+        if (::mxIsInt32(_argin) == false || ::mxGetM(_argin) != 1 || ::mxGetN(_argin) != 1)
         {
           MEX_UTILS->set_error("invalid argin specified",
                                "1-by-1 int32 array expected",
@@ -803,12 +803,12 @@ int DataAdapter::encode_argin (DeviceDesc * _ddesc,
         //- now insert the long into the Tango::DeviceData
         dd_in_ << *((Tango::DevLong*)::mxGetData(_argin));
       } break;
-        
+
       //-- DEV_FLOAT -----------------------------------
-      case Tango::DEV_FLOAT: 
+      case Tango::DEV_FLOAT:
       {
         //- check argin type - must be a 1-by-1 single array
-        if (::mxIsSingle(_argin) == false || ::mxGetM(_argin) != 1 || ::mxGetN(_argin) != 1) 
+        if (::mxIsSingle(_argin) == false || ::mxGetM(_argin) != 1 || ::mxGetN(_argin) != 1)
         {
           MEX_UTILS->set_error("invalid argin specified",
                                "1-by-1 single array expected",
@@ -818,12 +818,12 @@ int DataAdapter::encode_argin (DeviceDesc * _ddesc,
         //- now insert the float into the Tango::DeviceData
         dd_in_ << *((Tango::DevFloat*)::mxGetData(_argin));
       } break;
-        
+
       //-- DEV_DOUBLE ----------------------------------
-      case Tango::DEV_DOUBLE: 
+      case Tango::DEV_DOUBLE:
       {
         //- check argin type - must be a 1-by-1 double array
-        if (::mxIsDouble(_argin) == false || ::mxGetM(_argin) != 1 || ::mxGetN(_argin) != 1) 
+        if (::mxIsDouble(_argin) == false || ::mxGetM(_argin) != 1 || ::mxGetN(_argin) != 1)
         {
           MEX_UTILS->set_error("invalid argin specified",
                                "1-by-1 double array expected",
@@ -832,25 +832,25 @@ int DataAdapter::encode_argin (DeviceDesc * _ddesc,
         }
         //- now insert the double into the Tango::DeviceData
         dd_in_ << *((Tango::DevDouble*)::mxGetPr(_argin));
-      } 
+      }
       break;
-                    
+
       //-- DEFAULT BEHAVIOUR ---------------------------
       default:
       {
         MEX_UTILS->set_error("unknown TANGO data type",
                              "unexpected TANGO data type for argin",
                              "DataAdapter::encode_argin");
-        return kError; 
+        return kError;
       } break;
-    } //- switch 
+    } //- switch
   } //try
-  catch (const Tango::DevFailed &e) 
+  catch (const Tango::DevFailed &e)
   {
     MEX_UTILS->set_error(e);
     return kError;
   }
-  catch (...) 
+  catch (...)
   {
     MEX_UTILS->set_error("unknown error",
                          "unknown exception caught",
@@ -859,39 +859,39 @@ int DataAdapter::encode_argin (DeviceDesc * _ddesc,
   }
   return kNoError;
 }
-                    
+
 //=============================================================================
 //- DataAdapter::decode_argout
 //=============================================================================
-int DataAdapter::decode_argout (DeviceDesc* _ddesc, 
+int DataAdapter::decode_argout (DeviceDesc* _ddesc,
                                 int _cmd_id,
-                                Tango::DeviceData& _dd_out, 
+                                Tango::DeviceData& _dd_out,
                                 mxArray *& argout_)
 {
   argout_ = 0;
-          
-  if (_ddesc == 0) 
+
+  if (_ddesc == 0)
   {
     MEX_UTILS->set_error("internal error",
                          "unexpected NULL argument",
                          "DataAdapter::decode_argout");
     return kError;
   }
-  
+
   _dd_out.set_exceptions(Tango::DeviceData::isempty_flag);
   _dd_out.set_exceptions(Tango::DeviceData::wrongtype_flag);
-  
-  try 
+
+  try
   {
     int argout_type = (_ddesc->cmd_list())[_cmd_id].out_type;
-    switch (argout_type) 
+    switch (argout_type)
     {
       //-- DEV_VOID ------------------------------------
-      case Tango::DEV_VOID: 
+      case Tango::DEV_VOID:
       {
-        return kNoError; 
+        return kNoError;
       } break;
-        
+
       //-- DEVVAR_LONGSTRINGARRAY ----------------------
       case Tango::DEVVAR_LONGSTRINGARRAY:
       {
@@ -924,8 +924,8 @@ int DataAdapter::decode_argout (DeviceDesc* _ddesc,
           return kError;
         }
         //- copy from src to dest (field lvalue)
-        ::memcpy(::mxGetData(lvalue), src->lvalue.get_buffer(), len * sizeof(Tango::DevLong)); 
-        //- attach lvalue to argout_.lvalue 
+        ::memcpy(::mxGetData(lvalue), src->lvalue.get_buffer(), len * sizeof(Tango::DevLong));
+        //- attach lvalue to argout_.lvalue
         ::mxSetFieldByNumber(argout_, 0, 0, lvalue);
         //- create a 1-by-n cell array to populate field svalue
         len = src->svalue.length();
@@ -939,14 +939,14 @@ int DataAdapter::decode_argout (DeviceDesc* _ddesc,
         }
         //- copy from src to dest (field svalue)
         for (size_t i = 0; i < len; i++) {
-          ::mxSetCell(svalue, i, ::mxCreateString(src->svalue[i]));     
+          ::mxSetCell(svalue, i, ::mxCreateString(src->svalue[i]));
         }
-        //- attach svalue to argout_.svalue 
+        //- attach svalue to argout_.svalue
         ::mxSetFieldByNumber(argout_, 0, 1, svalue);
       } break;
-        
+
       //-- DEVVAR_DOUBLESTRINGARRAY --------------------
-      case Tango::DEVVAR_DOUBLESTRINGARRAY: 
+      case Tango::DEVVAR_DOUBLESTRINGARRAY:
       {
         const Tango::DevVarDoubleStringArray* src = 0;
         _dd_out >> src;
@@ -977,8 +977,8 @@ int DataAdapter::decode_argout (DeviceDesc* _ddesc,
           return kError;
         }
         //- copy from src to dest (field dvalue)
-        ::memcpy(::mxGetData(dvalue), src->dvalue.get_buffer(), len * sizeof(Tango::DevDouble)); 
-        //- attach dvalue to argout_.dvalue 
+        ::memcpy(::mxGetData(dvalue), src->dvalue.get_buffer(), len * sizeof(Tango::DevDouble));
+        //- attach dvalue to argout_.dvalue
         ::mxSetFieldByNumber(argout_, 0, 0, dvalue);
         //- create a 1-by-n cell array to populate field svalue
         len = src->svalue.length();
@@ -992,14 +992,14 @@ int DataAdapter::decode_argout (DeviceDesc* _ddesc,
         }
         //- copy from src to dest (field svalue)
         for (size_t i = 0; i < len; i++) {
-          ::mxSetCell(svalue, i, ::mxCreateString(src->svalue[i]));     
+          ::mxSetCell(svalue, i, ::mxCreateString(src->svalue[i]));
         }
-        //- attach svalue to argout_.svalue 
+        //- attach svalue to argout_.svalue
         ::mxSetFieldByNumber(argout_, 0, 1, svalue);
       } break;
-        
+
       //-- DEVVAR_STRINGARRAY -------------------------
-      case Tango::DEVVAR_STRINGARRAY: 
+      case Tango::DEVVAR_STRINGARRAY:
       {
         const Tango::DevVarStringArray* src = 0;
         _dd_out >> src;
@@ -1021,12 +1021,12 @@ int DataAdapter::decode_argout (DeviceDesc* _ddesc,
         }
         //- copy from src to dest
         for (size_t i = 0; i < len; i++) {
-          ::mxSetCell(argout_, i, ::mxCreateString((*src)[i]));     
+          ::mxSetCell(argout_, i, ::mxCreateString((*src)[i]));
         }
       } break;
-        
+
       //-- DEVVAR_DOUBLEARRAY -------------------------
-      case Tango::DEVVAR_DOUBLEARRAY: 
+      case Tango::DEVVAR_DOUBLEARRAY:
       {
         const Tango::DevVarDoubleArray* src = 0;
         _dd_out >> src;
@@ -1047,11 +1047,11 @@ int DataAdapter::decode_argout (DeviceDesc* _ddesc,
           return kError;
         }
         //- copy from src to dest
-        ::memcpy(::mxGetData(argout_), src->get_buffer(), len * sizeof(Tango::DevDouble)); 
+        ::memcpy(::mxGetData(argout_), src->get_buffer(), len * sizeof(Tango::DevDouble));
       } break;
-        
+
       //-- DEVVAR_FLOATARRAY -------------------------
-      case Tango::DEVVAR_FLOATARRAY: 
+      case Tango::DEVVAR_FLOATARRAY:
       {
         const Tango::DevVarFloatArray* src = 0;
         _dd_out >> src;
@@ -1072,11 +1072,11 @@ int DataAdapter::decode_argout (DeviceDesc* _ddesc,
           return kError;
         }
         //- copy from src to dest
-        ::memcpy(::mxGetData(argout_), src->get_buffer(), len * sizeof(Tango::DevFloat)); 
+        ::memcpy(::mxGetData(argout_), src->get_buffer(), len * sizeof(Tango::DevFloat));
       } break;
-     
+
       //-- DEVVAR_ULONG64ARRAY -------------------------
-      case Tango::DEVVAR_ULONG64ARRAY: 
+      case Tango::DEVVAR_ULONG64ARRAY:
       {
 #if ! defined(SCILAB)
         const Tango::DevVarULong64Array* src = 0;
@@ -1104,11 +1104,11 @@ int DataAdapter::decode_argout (DeviceDesc* _ddesc,
                              "SCILAB does not support 64 bits data",
                              "DataAdapter::encode_argin");
         return kError;
-#endif 
+#endif
       } break;
-      
+
       //-- DEVVAR_LONG64ARRAY -------------------------
-      case Tango::DEVVAR_LONG64ARRAY: 
+      case Tango::DEVVAR_LONG64ARRAY:
       {
 #if ! defined(SCILAB)
         const Tango::DevVarLong64Array* src = 0;
@@ -1136,11 +1136,11 @@ int DataAdapter::decode_argout (DeviceDesc* _ddesc,
                              "SCILAB does not support 64 bits data",
                              "DataAdapter::encode_argin");
         return kError;
-#endif 
+#endif
       } break;
-      
+
       //-- DEVVAR_ULONGARRAY -------------------------
-      case Tango::DEVVAR_ULONGARRAY: 
+      case Tango::DEVVAR_ULONGARRAY:
       {
         const Tango::DevVarULongArray* src = 0;
         _dd_out >> src;
@@ -1161,11 +1161,11 @@ int DataAdapter::decode_argout (DeviceDesc* _ddesc,
           return kError;
         }
         //- copy from src to dest
-        ::memcpy(::mxGetData(argout_), src->get_buffer(), len * sizeof(Tango::DevULong)); 
+        ::memcpy(::mxGetData(argout_), src->get_buffer(), len * sizeof(Tango::DevULong));
       } break;
-        
+
       //-- DEVVAR_LONGARRAY -------------------------
-      case Tango::DEVVAR_LONGARRAY: 
+      case Tango::DEVVAR_LONGARRAY:
       {
         const Tango::DevVarLongArray* src = 0;
         _dd_out >> src;
@@ -1186,11 +1186,11 @@ int DataAdapter::decode_argout (DeviceDesc* _ddesc,
           return kError;
         }
         //- copy from src to dest
-        ::memcpy(::mxGetData(argout_), src->get_buffer(), len * sizeof(Tango::DevLong)); 
+        ::memcpy(::mxGetData(argout_), src->get_buffer(), len * sizeof(Tango::DevLong));
       } break;
-        
+
       //-- DEVVAR_USHORTARRAY -------------------------
-      case Tango::DEVVAR_USHORTARRAY: 
+      case Tango::DEVVAR_USHORTARRAY:
       {
         const Tango::DevVarUShortArray* src = 0;
         _dd_out >> src;
@@ -1211,11 +1211,11 @@ int DataAdapter::decode_argout (DeviceDesc* _ddesc,
           return kError;
         }
         //- copy from src to dest
-        ::memcpy(::mxGetData(argout_), src->get_buffer(), len * sizeof(Tango::DevUShort)); 
+        ::memcpy(::mxGetData(argout_), src->get_buffer(), len * sizeof(Tango::DevUShort));
       } break;
-        
+
       //-- DEVVAR_SHORTARRAY -------------------------
-      case Tango::DEVVAR_SHORTARRAY: 
+      case Tango::DEVVAR_SHORTARRAY:
       {
         const Tango::DevVarShortArray* src = 0;
         _dd_out >> src;
@@ -1236,11 +1236,11 @@ int DataAdapter::decode_argout (DeviceDesc* _ddesc,
           return kError;
         }
         //- copy from src to dest
-        ::memcpy(::mxGetData(argout_), src->get_buffer(), len * sizeof(Tango::DevShort)); 
+        ::memcpy(::mxGetData(argout_), src->get_buffer(), len * sizeof(Tango::DevShort));
       } break;
-        
+
       //-- DEVVAR_CHARARRAY -------------------------
-      case Tango::DEVVAR_CHARARRAY: 
+      case Tango::DEVVAR_CHARARRAY:
       {
         const Tango::DevVarCharArray* src = 0;
         _dd_out >> src;
@@ -1261,11 +1261,11 @@ int DataAdapter::decode_argout (DeviceDesc* _ddesc,
           return kError;
         }
         //- copy from src to dest
-        ::memcpy(::mxGetData(argout_), src->get_buffer(), len * sizeof(Tango::DevUChar)); 
+        ::memcpy(::mxGetData(argout_), src->get_buffer(), len * sizeof(Tango::DevUChar));
       } break;
-        
+
       //-- DEV_STRING --------------------------------
-      case Tango::DEV_STRING: 
+      case Tango::DEV_STRING:
       {
         std::string str;
         _dd_out >> str;
@@ -1277,11 +1277,11 @@ int DataAdapter::decode_argout (DeviceDesc* _ddesc,
                                "DataAdapter::decode_argout");
           return kError;
         }
-      } 
+      }
         break;
-        
+
         //-- DEV_BOOLEAN -------------------------------
-      case Tango::DEV_BOOLEAN: 
+      case Tango::DEV_BOOLEAN:
       {
         Tango::DevBoolean b;
         _dd_out >> b;
@@ -1297,9 +1297,9 @@ int DataAdapter::decode_argout (DeviceDesc* _ddesc,
         //- copy from src to dest
         *((MXBOOLEAN *)::mxGetData(argout_)) = b;
       } break;
-        
+
       //-- DEV_USHORT --------------------------------
-      case Tango::DEV_USHORT: 
+      case Tango::DEV_USHORT:
       {
         Tango::DevUShort us;
         _dd_out >> us;
@@ -1315,9 +1315,9 @@ int DataAdapter::decode_argout (DeviceDesc* _ddesc,
         //- copy from src to dest
         *((Tango::DevUShort*)::mxGetData(argout_)) = us;
       } break;
-        
-      //-- DEV_SHORT ---------------------------------
-      case Tango::DEV_SHORT: 
+
+      //-- DEV_SHORT -----------------------------------
+      case Tango::DEV_SHORT:
       {
         Tango::DevShort s;
         _dd_out >> s;
@@ -1333,9 +1333,9 @@ int DataAdapter::decode_argout (DeviceDesc* _ddesc,
         //- copy from src to dest
         *((Tango::DevShort*)::mxGetData(argout_)) = s;
       } break;
-        
+
       //-- DEV_ULONG64 -------------------------------
-      case Tango::DEV_ULONG64: 
+      case Tango::DEV_ULONG64:
       {
 #if ! defined(SCILAB)
         Tango::DevULong64 ull;
@@ -1356,11 +1356,11 @@ int DataAdapter::decode_argout (DeviceDesc* _ddesc,
                              "SCILAB does not support 64 bits data",
                              "DataAdapter::encode_argin");
         return kError;
-#endif 
+#endif
       } break;
-      
+
       //-- DEV_LONG64 --------------------------------
-      case Tango::DEV_LONG64: 
+      case Tango::DEV_LONG64:
       {
 #if ! defined(SCILAB)
         Tango::DevULong64 ll;
@@ -1381,11 +1381,11 @@ int DataAdapter::decode_argout (DeviceDesc* _ddesc,
                              "SCILAB does not support 64 bits data",
                              "DataAdapter::encode_argin");
         return kError;
-#endif 
+#endif
       } break;
-      
+
       //-- DEV_ULONG ---------------------------------
-      case Tango::DEV_ULONG: 
+      case Tango::DEV_ULONG:
       {
         Tango::DevULong ul;
         _dd_out >> ul;
@@ -1401,9 +1401,9 @@ int DataAdapter::decode_argout (DeviceDesc* _ddesc,
         //- copy from src to dest
         *((Tango::DevULong*)::mxGetData(argout_)) = ul;
       } break;
-        
+
       //-- DEV_LONG ---------------------------------
-      case Tango::DEV_LONG: 
+      case Tango::DEV_LONG:
       {
         Tango::DevLong l;
         _dd_out >> l;
@@ -1419,9 +1419,9 @@ int DataAdapter::decode_argout (DeviceDesc* _ddesc,
         //- copy from src to dest
         *((Tango::DevLong*)::mxGetData(argout_)) = l;
       } break;
-      
+
       //-- DEV_FLOAT --------------------------------
-      case Tango::DEV_FLOAT: 
+      case Tango::DEV_FLOAT:
       {
         Tango::DevFloat f;
         _dd_out >> f;
@@ -1437,9 +1437,9 @@ int DataAdapter::decode_argout (DeviceDesc* _ddesc,
         //- copy from src to dest
         *((Tango::DevFloat*)::mxGetData(argout_)) = f;
       } break;
-        
+
       //-- DEV_DOUBLE -------------------------------
-      case Tango::DEV_DOUBLE: 
+      case Tango::DEV_DOUBLE:
       {
         Tango::DevDouble d;
         _dd_out >> d;
@@ -1455,9 +1455,9 @@ int DataAdapter::decode_argout (DeviceDesc* _ddesc,
         //- copy from src to dest
         *((Tango::DevDouble*)::mxGetPr(argout_)) = d;
       } break;
-        
+
       //-- DEV_STATE --------------------------------
-      case Tango::DEV_STATE: 
+      case Tango::DEV_STATE:
       {
         Tango::DevState ds;
         _dd_out >> ds;
@@ -1474,33 +1474,33 @@ int DataAdapter::decode_argout (DeviceDesc* _ddesc,
           return kError;
         }
       } break;
-        
+
       //-- DEFAULT ----------------------------------
       default:
       {
         MEX_UTILS->set_error("unknown TANGO data type",
                              "unexpected TANGO data type for argout",
                              "DataAdapter::decode_argout");
-        return kError;         
+        return kError;
       } break;
     } //- switch
-  } //- try        
-  catch (const Tango::DevFailed &e) 
+  } //- try
+  catch (const Tango::DevFailed &e)
   {
     MEX_UTILS->set_error(e);
     return kError;
   }
-  catch (...) 
+  catch (...)
   {
     MEX_UTILS->set_error("unknown error",
                          "unknown exception caught",
                          "DataAdapter::decode_argout");
     return kError;
   }
-  
+
   return kNoError;
 }
-                    
+
 //=============================================================================
 //- DataAdapter::encode_attr
 //=============================================================================
@@ -1510,7 +1510,7 @@ int DataAdapter::encode_attr (DeviceDesc * _ddesc,
                               Tango::DeviceAttribute & value_)
 {
   //- check input
-  if (_ddesc == 0) 
+  if (_ddesc == 0)
   {
     MEX_UTILS->set_error("internal error",
                          "unexpected NULL argument",
@@ -1540,17 +1540,17 @@ int DataAdapter::encode_attr (DeviceDesc * _ddesc,
   value_.time.tv_nsec = 0;
 #endif
   //- convert mxArray to TANGO type
-  try 
+  try
   {
-    switch (attr_format) 
+    switch (attr_format)
     {
         //-- SCALAR ATTRIBUTE -------------------------------------------
-      case Tango::SCALAR: 
+      case Tango::SCALAR:
       {
-        switch (attr_type) 
+        switch (attr_type)
         {
           //-- SCALAR::DEV_BOOLEAN -------------------------------------
-          case Tango::DEV_BOOLEAN: 
+          case Tango::DEV_BOOLEAN:
           {
             //- check argin type - must be a 1-by-1 uint8 array
             if (::MXISBOOLEAN(_argin) == false || ::mxGetM(_argin) != 1 || ::mxGetN(_argin) != 1) {
@@ -1565,8 +1565,8 @@ int DataAdapter::encode_attr (DeviceDesc * _ddesc,
             value_.dim_x = 1;
             value_.dim_y = 0;
           } break;
-            //-- SCALAR::DEV_UCHAR ---------------------------------------
-          case Tango::DEV_UCHAR: 
+          //-- SCALAR::DEV_UCHAR ---------------------------------------
+          case Tango::DEV_UCHAR:
           {
             //- check argin type - must be a 1-by-1 uint8 array
             if (::mxIsUint8(_argin) == false || ::mxGetM(_argin) != 1 || ::mxGetN(_argin) != 1) {
@@ -1581,8 +1581,8 @@ int DataAdapter::encode_attr (DeviceDesc * _ddesc,
             value_.dim_x = 1;
             value_.dim_y = 0;
           } break;
-            //-- SCALAR::DEV_USHORT --------------------------------------
-          case Tango::DEV_USHORT: 
+          //-- SCALAR::DEV_USHORT --------------------------------------
+          case Tango::DEV_USHORT:
           {
             //- check argin type - must be a 1-by-1 uint16 array
             if (::mxIsUint16(_argin) == false || ::mxGetM(_argin) != 1 || ::mxGetN(_argin) != 1) {
@@ -1597,8 +1597,10 @@ int DataAdapter::encode_attr (DeviceDesc * _ddesc,
             value_.dim_x = 1;
             value_.dim_y = 0;
           } break;
-            //-- SCALAR::DEV_SHORT ---------------------------------------
-          case Tango::DEV_SHORT: 
+          //-- DEV_ENUM ------------------------------------
+          case Tango::DEV_ENUM:
+          //-- DEV_SHORT -----------------------------------
+          case Tango::DEV_SHORT:
           {
             //- check argin type - must be a 1-by-1 int16 array
             if (::mxIsInt16(_argin) == false || ::mxGetM(_argin) != 1 || ::mxGetN(_argin) != 1) {
@@ -1614,7 +1616,7 @@ int DataAdapter::encode_attr (DeviceDesc * _ddesc,
             value_.dim_y = 0;
           } break;
           //-- SCALAR::DEV_LONG64 --------------------------------------
-          case Tango::DEV_LONG64: 
+          case Tango::DEV_LONG64:
           {
 #if ! defined(SCILAB)
             //- check argin type - must be a 1-by-1 int64 array
@@ -1634,10 +1636,10 @@ int DataAdapter::encode_attr (DeviceDesc * _ddesc,
                              "SCILAB does not support 64 bits data",
                              "DataAdapter::encode_attr");
         return kError;
-#endif 
+#endif
           } break;
           //-- SCALAR::DEV_ULONG64 --------------------------------------
-          case Tango::DEV_ULONG64: 
+          case Tango::DEV_ULONG64:
           {
 #if ! defined(SCILAB)
             //- check argin type - must be a 1-by-1 uint64 array
@@ -1657,10 +1659,10 @@ int DataAdapter::encode_attr (DeviceDesc * _ddesc,
                              "SCILAB does not support 64 bits data",
                              "DataAdapter::encode_attr");
         return kError;
-#endif 
+#endif
           } break;
           //-- SCALAR::DEV_LONG ----------------------------------------
-          case Tango::DEV_LONG: 
+          case Tango::DEV_LONG:
           {
             //- check argin type - must be a 1-by-1 int32 array
             if (::mxIsInt32(_argin) == false || ::mxGetM(_argin) != 1 || ::mxGetN(_argin) != 1) {
@@ -1676,7 +1678,7 @@ int DataAdapter::encode_attr (DeviceDesc * _ddesc,
             value_.dim_y = 0;
           } break;
           //-- SCALAR::DEV_ULONG ----------------------------------------
-          case Tango::DEV_ULONG: 
+          case Tango::DEV_ULONG:
           {
             //- check argin type - must be a 1-by-1 uint32 array
             if (::mxIsUint32(_argin) == false || ::mxGetM(_argin) != 1 || ::mxGetN(_argin) != 1) {
@@ -1692,7 +1694,7 @@ int DataAdapter::encode_attr (DeviceDesc * _ddesc,
             value_.dim_y = 0;
           } break;
           //-- SCALAR::DEV_FLOAT ---------------------------------------
-          case Tango::DEV_FLOAT: 
+          case Tango::DEV_FLOAT:
           {
             //- check argin type - must be a 1-by-1 single array
             if (::mxIsSingle(_argin) == false || ::mxGetM(_argin) != 1 || ::mxGetN(_argin) != 1) {
@@ -1708,7 +1710,7 @@ int DataAdapter::encode_attr (DeviceDesc * _ddesc,
             value_.dim_y = 0;
           } break;
           //-- SCALAR::DEV_DOUBLE --------------------------------------
-          case Tango::DEV_DOUBLE: 
+          case Tango::DEV_DOUBLE:
           {
             //- check argin type - must be a 1-by-1 double array
             if (::mxIsDouble(_argin) == false || ::mxGetM(_argin) != 1 || ::mxGetN(_argin) != 1) {
@@ -1724,7 +1726,7 @@ int DataAdapter::encode_attr (DeviceDesc * _ddesc,
             value_.dim_y = 0;
           } break;
           //-- SCALAR::DEV_STRING --------------------------------------
-          case Tango::DEV_STRING: 
+          case Tango::DEV_STRING:
           {
             //- check argin type - must be a 1-by-n char array
             if (::mxIsChar(_argin) == false || ::mxGetM(_argin) != 1) {
@@ -1733,7 +1735,7 @@ int DataAdapter::encode_attr (DeviceDesc * _ddesc,
                                    "DataAdapter::encode_attr");
               return kError;
             }
-            //- get c-string from Matlab array 
+            //- get c-string from Matlab array
             char* cstr = ::mxArrayToString(_argin);
             //- now insert the c-string into the Tango::DeviceData
             //- make gcc happy : doesn't like : value_ << std::string(cstr);
@@ -1753,12 +1755,12 @@ int DataAdapter::encode_attr (DeviceDesc * _ddesc,
         } //- switch::attr_type
       } break; //- SCALAR
       //-- SPECTRUM ATTRIBUTE -----------------------------------------
-      case Tango::SPECTRUM: 
+      case Tango::SPECTRUM:
       {
-        switch (attr_type) 
+        switch (attr_type)
         {
           //-- SPECTRUM::DEV_BOOLEAN -------------------------------------
-          case Tango::DEV_BOOLEAN: 
+          case Tango::DEV_BOOLEAN:
           {
             //- check argin type - must be a 1-by-n MXBOOLEAN array
             if (::MXISBOOLEAN(_argin) == false || ::mxGetM(_argin) != 1) {
@@ -1776,7 +1778,7 @@ int DataAdapter::encode_attr (DeviceDesc * _ddesc,
               return kError;
             }
             //- populate the Tango::DevVarBooleanArray
-            size_t len = ::mxGetN(_argin); 
+            size_t len = ::mxGetN(_argin);
             dest->length(len);
             if (sizeof(MXBOOLEAN) == sizeof(Tango::DevBoolean)) {
               ::memcpy(dest->get_buffer(), ::mxGetData(_argin), len * sizeof(Tango::DevBoolean));
@@ -1794,7 +1796,7 @@ int DataAdapter::encode_attr (DeviceDesc * _ddesc,
             value_.dim_y = 0;
           } break;
           //-- SPECTRUM::DEV_UCHAR ---------------------------------------
-          case Tango::DEV_UCHAR: 
+          case Tango::DEV_UCHAR:
           {
             //- check argin type - must be a 1-by-n uint8 array
             if (::mxIsUint8(_argin) == false || ::mxGetM(_argin) != 1) {
@@ -1812,7 +1814,7 @@ int DataAdapter::encode_attr (DeviceDesc * _ddesc,
              return kError;
             }
             //- populate the Tango::DevVarUCharArray
-            size_t len = ::mxGetN(_argin); 
+            size_t len = ::mxGetN(_argin);
             dest->length(len);
             ::memcpy(dest->get_buffer(), ::mxGetData(_argin), len * sizeof(Tango::DevUChar));
             //- now insert the Tango::DevVarUCharArray into the Tango::DeviceAttribute
@@ -1822,7 +1824,7 @@ int DataAdapter::encode_attr (DeviceDesc * _ddesc,
             value_.dim_y = 0;
           } break;
           //-- SPECTRUM::DEV_USHORT --------------------------------------
-          case Tango::DEV_USHORT: 
+          case Tango::DEV_USHORT:
           {
             //- check argin type - must be a 1-by-n uint16 array
             if (::mxIsUint16(_argin) == false || ::mxGetM(_argin) != 1) {
@@ -1840,7 +1842,7 @@ int DataAdapter::encode_attr (DeviceDesc * _ddesc,
               return kError;
             }
             //- populate the Tango::DevVarUShortArray
-            size_t len = ::mxGetN(_argin); 
+            size_t len = ::mxGetN(_argin);
             dest->length(len);
             ::memcpy(dest->get_buffer(), ::mxGetData(_argin), len * sizeof(Tango::DevUShort));
             //- now insert the Tango::DevVarUShortArray into the Tango::DeviceAttribute
@@ -1849,8 +1851,10 @@ int DataAdapter::encode_attr (DeviceDesc * _ddesc,
             value_.dim_x = len;
             value_.dim_y = 0;
           } break;
-          //-- SPECTRUM::DEV_SHORT --------------------------------------
-          case Tango::DEV_SHORT: 
+          //-- DEV_ENUM ------------------------------------
+          case Tango::DEV_ENUM:
+          //-- DEV_SHORT -----------------------------------
+          case Tango::DEV_SHORT:
           {
             //- check argin type - must be a 1-by-n int16 array
             if (::mxIsInt16(_argin) == false || ::mxGetM(_argin) != 1) {
@@ -1868,7 +1872,7 @@ int DataAdapter::encode_attr (DeviceDesc * _ddesc,
               return kError;
             }
             //- populate the Tango::DevVarShortArray
-            size_t len = ::mxGetN(_argin); 
+            size_t len = ::mxGetN(_argin);
             dest->length(len);
             ::memcpy(dest->get_buffer(), ::mxGetData(_argin), len * sizeof(Tango::DevShort));
             //- now insert the Tango::DevVarShortArray into the Tango::DeviceAttribute
@@ -1878,7 +1882,7 @@ int DataAdapter::encode_attr (DeviceDesc * _ddesc,
             value_.dim_y = 0;
           } break;
           //-- SPECTRUM::DEV_LONG64 -------------------------------------
-          case Tango::DEV_LONG64: 
+          case Tango::DEV_LONG64:
           {
 #if ! defined(SCILAB)
             //- check argin type - must be a 1-by-n int64 array
@@ -1895,9 +1899,9 @@ int DataAdapter::encode_attr (DeviceDesc * _ddesc,
                                    "Tango::DevVarLong64Array allocation failed",
                                    "DataAdapter::encode_attr");
               return kError;
-            } 
+            }
             //- populate the Tango::DevVarLong64Array
-            size_t len = ::mxGetN(_argin); 
+            size_t len = ::mxGetN(_argin);
             dest->length(len);
             ::memcpy(dest->get_buffer(), ::mxGetData(_argin), len * sizeof(Tango::DevLong64));
             //- now insert the Tango::DevVarLong64Array into the Tango::DeviceAttribute
@@ -1910,10 +1914,10 @@ int DataAdapter::encode_attr (DeviceDesc * _ddesc,
                                 "SCILAB does not support 64 bits data",
                                 "DataAdapter::encode_attr");
             return kError;
-#endif 
+#endif
           } break;
           //-- SPECTRUM::DEV_ULONG64 -------------------------------------
-          case Tango::DEV_ULONG64: 
+          case Tango::DEV_ULONG64:
           {
 #if ! defined(SCILAB)
             //- check argin type - must be a 1-by-n uint64 array
@@ -1930,9 +1934,9 @@ int DataAdapter::encode_attr (DeviceDesc * _ddesc,
                                    "Tango::DevVarULong64Array allocation failed",
                                    "DataAdapter::encode_attr");
               return kError;
-            } 
+            }
             //- populate the Tango::DevVarULong64Array
-            size_t len = ::mxGetN(_argin); 
+            size_t len = ::mxGetN(_argin);
             dest->length(len);
             ::memcpy(dest->get_buffer(), ::mxGetData(_argin), len * sizeof(Tango::DevULong64));
             //- now insert the Tango::DevVarULong64Array into the Tango::DeviceAttribute
@@ -1945,10 +1949,10 @@ int DataAdapter::encode_attr (DeviceDesc * _ddesc,
                                 "SCILAB does not support 64 bits data",
                                 "DataAdapter::encode_attr");
             return kError;
-#endif 
+#endif
           } break;
           //-- SPECTRUM::DEV_LONG ---------------------------------------
-          case Tango::DEV_LONG: 
+          case Tango::DEV_LONG:
           {
             //- check argin type - must be a 1-by-n int32 array
             if (::mxIsInt32(_argin) == false || ::mxGetM(_argin) != 1) {
@@ -1964,9 +1968,9 @@ int DataAdapter::encode_attr (DeviceDesc * _ddesc,
                                    "Tango::DevVarLongArray allocation failed",
                                    "DataAdapter::encode_attr");
               return kError;
-            } 
+            }
             //- populate the Tango::DevVarLongArray
-            size_t len = ::mxGetN(_argin); 
+            size_t len = ::mxGetN(_argin);
             dest->length(len);
             ::memcpy(dest->get_buffer(), ::mxGetData(_argin), len * sizeof(Tango::DevLong));
             //- now insert the Tango::DevVarLongArray into the Tango::DeviceAttribute
@@ -1976,7 +1980,7 @@ int DataAdapter::encode_attr (DeviceDesc * _ddesc,
             value_.dim_y = 0;
           } break;
           //-- SPECTRUM::DEV_ULONG ---------------------------------------
-          case Tango::DEV_ULONG: 
+          case Tango::DEV_ULONG:
           {
             //- check argin type - must be a 1-by-n uint32 array
             if (::mxIsUint32(_argin) == false || ::mxGetM(_argin) != 1) {
@@ -1992,9 +1996,9 @@ int DataAdapter::encode_attr (DeviceDesc * _ddesc,
                                    "Tango::DevVarULongArray allocation failed",
                                    "DataAdapter::encode_attr");
               return kError;
-            } 
+            }
             //- populate the Tango::DevVarULongArray
-            size_t len = ::mxGetN(_argin); 
+            size_t len = ::mxGetN(_argin);
             dest->length(len);
             ::memcpy(dest->get_buffer(), ::mxGetData(_argin), len * sizeof(Tango::DevULong));
             //- now insert the Tango::DevVarULongArray into the Tango::DeviceAttribute
@@ -2004,7 +2008,7 @@ int DataAdapter::encode_attr (DeviceDesc * _ddesc,
             value_.dim_y = 0;
           } break;
           //-- SPECTRUM::DEV_FLOAT -------------------------------------
-          case Tango::DEV_FLOAT: 
+          case Tango::DEV_FLOAT:
           {
             //- check argin type - must be a 1-by-n single array
             if (::mxIsSingle(_argin) == false || ::mxGetM(_argin) != 1) {
@@ -2022,7 +2026,7 @@ int DataAdapter::encode_attr (DeviceDesc * _ddesc,
               return kError;
             }
             //- populate the Tango::DevVarFloatArray
-            size_t len = ::mxGetN(_argin); 
+            size_t len = ::mxGetN(_argin);
             dest->length(len);
             ::memcpy(dest->get_buffer(), ::mxGetData(_argin), len * sizeof(Tango::DevFloat));
             //- now insert the Tango::DevVarFloatArray into the Tango::DeviceAttribute
@@ -2032,7 +2036,7 @@ int DataAdapter::encode_attr (DeviceDesc * _ddesc,
             value_.dim_y = 0;
           } break;
           //-- SPECTRUM::DEV_DOUBLE -------------------------------------
-          case Tango::DEV_DOUBLE: 
+          case Tango::DEV_DOUBLE:
           {
             //- check argin type - must be a 1-by-n double array
             if (::mxIsDouble(_argin) == false || ::mxGetM(_argin) != 1) {
@@ -2050,7 +2054,7 @@ int DataAdapter::encode_attr (DeviceDesc * _ddesc,
             return kError;
           }
           //- populate the Tango::DevVarDoubleArray
-          size_t len = ::mxGetN(_argin); 
+          size_t len = ::mxGetN(_argin);
           dest->length(len);
           ::memcpy(dest->get_buffer(), ::mxGetData(_argin), len * sizeof(Tango::DevDouble));
           //- now insert the Tango::DevVarDoubleArray into the Tango::DeviceAttribute
@@ -2060,7 +2064,7 @@ int DataAdapter::encode_attr (DeviceDesc * _ddesc,
           value_.dim_y = 0;
         } break;
         //-- SPECTRUM::DEV_STRING -------------------------------------
-        case Tango::DEV_STRING: 
+        case Tango::DEV_STRING:
         {
           //- check argin type - must be a 1-by-n cell array
           if (::mxIsCell(_argin) == false || ::mxGetM(_argin) != 1) {
@@ -2080,7 +2084,7 @@ int DataAdapter::encode_attr (DeviceDesc * _ddesc,
           //- populate the DevVarLongStringArray
           char* cstr = 0;
           mxArray * cell = 0;
-          size_t len = ::mxGetN(_argin); 
+          size_t len = ::mxGetN(_argin);
           dest->length(len);
           for (size_t i = 0; i < len; i++) {
             //- get <i>th cell of the array
@@ -2103,8 +2107,8 @@ int DataAdapter::encode_attr (DeviceDesc * _ddesc,
             //- get c-string from matlab char array.
             cstr = ::mxArrayToString(cell);
             if (cstr == 0) {
-              MEX_UTILS->set_error("internal error", 
-                                   "could not extract string from cell", 
+              MEX_UTILS->set_error("internal error",
+                                   "could not extract string from cell",
                                    "DataAdapter::encode_attr");
               delete dest;
               return kError;
@@ -2124,10 +2128,10 @@ int DataAdapter::encode_attr (DeviceDesc * _ddesc,
       } //switch attr_type
     } break; //- SPECTRUM
     //-- IMAGE ATTRIBUTE --------------------------------------------
-    case Tango::IMAGE: 
-    { 
-      mxArray * transposed_argin = 0; 
-      //- transpose matrix (Fortran to C++ storage) 
+    case Tango::IMAGE:
+    {
+      mxArray * transposed_argin = 0;
+      //- transpose matrix (Fortran to C++ storage)
       {
         mxArray *plhs = 0;
         mxArray *prhs = const_cast<mxArray *>(_argin);
@@ -2144,10 +2148,10 @@ int DataAdapter::encode_attr (DeviceDesc * _ddesc,
                              "DataAdapter::encode_attr");
         return kError;
       }
-      switch (attr_type) 
+      switch (attr_type)
       {
         //-- IMAGE::DEV_BOOLEAN -----------------------------------------
-        case Tango::DEV_BOOLEAN: 
+        case Tango::DEV_BOOLEAN:
         {
           //- check argin type - must be a m-by-n uint8 array
           if (::MXISBOOLEAN(transposed_argin) == false) {
@@ -2165,7 +2169,7 @@ int DataAdapter::encode_attr (DeviceDesc * _ddesc,
             return kError;
           }
           //- populate the Tango::DevVarCharArray
-          size_t len = ::mxGetM(transposed_argin) * ::mxGetN(transposed_argin); 
+          size_t len = ::mxGetM(transposed_argin) * ::mxGetN(transposed_argin);
           dest->length(len);
           if (sizeof(MXBOOLEAN) == sizeof(Tango::DevBoolean)) {
             ::memcpy(dest->get_buffer(), ::mxGetData(transposed_argin), len * sizeof(Tango::DevBoolean));
@@ -2183,7 +2187,7 @@ int DataAdapter::encode_attr (DeviceDesc * _ddesc,
           value_.dim_y = ::mxGetN(transposed_argin);
         } break;
         //-- IMAGE::DEV_UCHAR -----------------------------------------
-        case Tango::DEV_UCHAR: 
+        case Tango::DEV_UCHAR:
         {
           //- check argin type - must be a m-by-n uint8 array
           if (::mxIsUint8(transposed_argin) == false) {
@@ -2201,7 +2205,7 @@ int DataAdapter::encode_attr (DeviceDesc * _ddesc,
            return kError;
           }
           //- populate the Tango::DevVarCharArray
-          size_t len = ::mxGetM(transposed_argin) * ::mxGetN(transposed_argin); 
+          size_t len = ::mxGetM(transposed_argin) * ::mxGetN(transposed_argin);
           dest->length(len);
           ::memcpy(dest->get_buffer(), ::mxGetData(transposed_argin), len * sizeof(Tango::DevUChar));
           //- now insert the Tango::DevVarCharArray into the Tango::DeviceAttribute
@@ -2211,7 +2215,7 @@ int DataAdapter::encode_attr (DeviceDesc * _ddesc,
           value_.dim_y = ::mxGetN(transposed_argin);
         } break;
         //-- IMAGE::DEV_USHORT -----------------------------------------
-        case Tango::DEV_USHORT: 
+        case Tango::DEV_USHORT:
         {
           //- check argin type - must be a m-by-n uint16 array
           if (::mxIsUint16(transposed_argin) == false) {
@@ -2229,7 +2233,7 @@ int DataAdapter::encode_attr (DeviceDesc * _ddesc,
             return kError;
           }
           //- populate the DevVarUShortArray
-          size_t len = ::mxGetM(transposed_argin) * ::mxGetN(transposed_argin); 
+          size_t len = ::mxGetM(transposed_argin) * ::mxGetN(transposed_argin);
           dest->length(len);
           ::memcpy(dest->get_buffer(), ::mxGetData(transposed_argin), len * sizeof(Tango::DevUShort));
           //- now insert the Tango::DevVarUShortArray into the Tango::DeviceAttribute
@@ -2238,8 +2242,10 @@ int DataAdapter::encode_attr (DeviceDesc * _ddesc,
           value_.dim_x = ::mxGetM(transposed_argin);
           value_.dim_y = ::mxGetN(transposed_argin);
         } break;
-        //-- IMAGE::DEV_SHORT -----------------------------------------
-        case Tango::DEV_SHORT: 
+        //-- DEV_ENUM ------------------------------------
+        case Tango::DEV_ENUM:
+        //-- DEV_SHORT -----------------------------------
+        case Tango::DEV_SHORT:
         {
           //- check argin type - must be a m-by-n int16 array
           if (::mxIsInt16(transposed_argin) == false) {
@@ -2257,7 +2263,7 @@ int DataAdapter::encode_attr (DeviceDesc * _ddesc,
            return kError;
           }
           //- populate the DevVarShortArray
-          size_t len = ::mxGetM(transposed_argin) * ::mxGetN(transposed_argin); 
+          size_t len = ::mxGetM(transposed_argin) * ::mxGetN(transposed_argin);
           dest->length(len);
           ::memcpy(dest->get_buffer(), ::mxGetData(transposed_argin), len * sizeof(Tango::DevShort));
           //- now insert the Tango::DevVarShortArray into the Tango::DeviceAttribute
@@ -2267,7 +2273,7 @@ int DataAdapter::encode_attr (DeviceDesc * _ddesc,
           value_.dim_y = ::mxGetN(transposed_argin);
         } break;
         //-- IMAGE::DEV_LONG64 ----------------------------------------
-        case Tango::DEV_LONG64: 
+        case Tango::DEV_LONG64:
         {
 #if ! defined(SCILAB)
           //- check argin type - must be a m-by-n int64 array
@@ -2286,7 +2292,7 @@ int DataAdapter::encode_attr (DeviceDesc * _ddesc,
             return kError;
           }
           //- populate the DevVarLong64Array
-          size_t len = ::mxGetM(transposed_argin) * ::mxGetN(transposed_argin); 
+          size_t len = ::mxGetM(transposed_argin) * ::mxGetN(transposed_argin);
           dest->length(len);
           ::memcpy(dest->get_buffer(), ::mxGetData(transposed_argin), len * sizeof(Tango::DevLong64));
           //- now insert the Tango::DevVarLongArray into the Tango::DeviceAttribute
@@ -2299,10 +2305,10 @@ int DataAdapter::encode_attr (DeviceDesc * _ddesc,
                              "SCILAB does not support 64 bits data",
                              "DataAdapter::encode_attr");
         return kError;
-#endif 
+#endif
         } break;
         //-- IMAGE::DEV_ULONG64 ----------------------------------------
-        case Tango::DEV_ULONG64: 
+        case Tango::DEV_ULONG64:
         {
 #if ! defined(SCILAB)
           //- check argin type - must be a m-by-n uint64 array
@@ -2321,7 +2327,7 @@ int DataAdapter::encode_attr (DeviceDesc * _ddesc,
             return kError;
           }
           //- populate the DevVarULong64Array
-          size_t len = ::mxGetM(transposed_argin) * ::mxGetN(transposed_argin); 
+          size_t len = ::mxGetM(transposed_argin) * ::mxGetN(transposed_argin);
           dest->length(len);
           ::memcpy(dest->get_buffer(), ::mxGetData(transposed_argin), len * sizeof(Tango::DevULong64));
           //- now insert the Tango::DevVarULong64Array into the Tango::DeviceAttribute
@@ -2334,10 +2340,10 @@ int DataAdapter::encode_attr (DeviceDesc * _ddesc,
                              "SCILAB does not support 64 bits data",
                              "DataAdapter::encode_attr");
         return kError;
-#endif 
+#endif
         } break;
         //-- IMAGE::DEV_LONG ------------------------------------------
-        case Tango::DEV_LONG: 
+        case Tango::DEV_LONG:
         {
           //- check argin type - must be a m-by-n int32 array
           if (::mxIsInt32(transposed_argin) == false) {
@@ -2355,7 +2361,7 @@ int DataAdapter::encode_attr (DeviceDesc * _ddesc,
            return kError;
           }
           //- populate the DevVarLongArray
-          size_t len = ::mxGetM(transposed_argin) * ::mxGetN(transposed_argin); 
+          size_t len = ::mxGetM(transposed_argin) * ::mxGetN(transposed_argin);
           dest->length(len);
           ::memcpy(dest->get_buffer(), ::mxGetData(transposed_argin), len * sizeof(Tango::DevLong));
           //- now insert the Tango::DevVarLongArray into the Tango::DeviceAttribute
@@ -2365,7 +2371,7 @@ int DataAdapter::encode_attr (DeviceDesc * _ddesc,
           value_.dim_y = ::mxGetN(transposed_argin);
         } break;
         //-- IMAGE::DEV_ULONG ------------------------------------------
-        case Tango::DEV_ULONG: 
+        case Tango::DEV_ULONG:
         {
           //- check argin type - must be a m-by-n uint32 array
           if (::mxIsUint32(transposed_argin) == false) {
@@ -2383,7 +2389,7 @@ int DataAdapter::encode_attr (DeviceDesc * _ddesc,
            return kError;
           }
           //- populate the DevVarULongArray
-          size_t len = ::mxGetM(transposed_argin) * ::mxGetN(transposed_argin); 
+          size_t len = ::mxGetM(transposed_argin) * ::mxGetN(transposed_argin);
           dest->length(len);
           ::memcpy(dest->get_buffer(), ::mxGetData(transposed_argin), len * sizeof(Tango::DevULong));
           //- now insert the Tango::DevVarULongArray into the Tango::DeviceAttribute
@@ -2393,7 +2399,7 @@ int DataAdapter::encode_attr (DeviceDesc * _ddesc,
           value_.dim_y = ::mxGetN(transposed_argin);
         } break;
         //-- IMAGE::DEV_FLOAT -------------------------------------
-        case Tango::DEV_FLOAT: 
+        case Tango::DEV_FLOAT:
         {
           //- check argin type - must be a 1-by-n single array
           if (::mxIsSingle(transposed_argin) == false) {
@@ -2411,7 +2417,7 @@ int DataAdapter::encode_attr (DeviceDesc * _ddesc,
            return kError;
           }
           //- populate the DevVarFloatArray
-          size_t len = ::mxGetM(transposed_argin) * ::mxGetN(transposed_argin); 
+          size_t len = ::mxGetM(transposed_argin) * ::mxGetN(transposed_argin);
           dest->length(len);
           ::memcpy(dest->get_buffer(), ::mxGetData(transposed_argin), len * sizeof(Tango::DevFloat));
           //- now insert the Tango::DevVarFloatArray into the Tango::DeviceAttribute
@@ -2421,7 +2427,7 @@ int DataAdapter::encode_attr (DeviceDesc * _ddesc,
           value_.dim_y = ::mxGetN(transposed_argin);
         } break;
         //-- IMAGE::DEV_DOUBLE -------------------------------------
-        case Tango::DEV_DOUBLE: 
+        case Tango::DEV_DOUBLE:
         {
           //- check argin type - must be a 1-by-n double array
           if (::mxIsDouble(transposed_argin) == false) {
@@ -2439,7 +2445,7 @@ int DataAdapter::encode_attr (DeviceDesc * _ddesc,
             return kError;
           }
           //- populate the DevVarDoubleArray
-          size_t len = ::mxGetM(transposed_argin) * ::mxGetN(transposed_argin); 
+          size_t len = ::mxGetM(transposed_argin) * ::mxGetN(transposed_argin);
           dest->length(len);
           ::memcpy(dest->get_buffer(), ::mxGetData(transposed_argin), len * sizeof(Tango::DevDouble));
           //- now insert the Tango::DevVarDoubleArray into the Tango::DeviceAttribute
@@ -2449,7 +2455,7 @@ int DataAdapter::encode_attr (DeviceDesc * _ddesc,
           value_.dim_y = ::mxGetN(transposed_argin);
         } break;
         //-- IMAGE::DEV_STRING -------------------------------------
-        case Tango::DEV_STRING: 
+        case Tango::DEV_STRING:
         {
           //- check argin type - must be a 1-by-n cell array
           if (::mxIsCell(transposed_argin) == false ) {
@@ -2469,7 +2475,7 @@ int DataAdapter::encode_attr (DeviceDesc * _ddesc,
           //- populate the DevVarLongStringArray
           char* cstr = 0;
           mxArray * cell = 0;
-          size_t len = ::mxGetM(transposed_argin) * ::mxGetN(transposed_argin); 
+          size_t len = ::mxGetM(transposed_argin) * ::mxGetN(transposed_argin);
           dest->length(len);
           for (size_t i = 0; i < len; i++) {
             //- get <i>th cell of the array
@@ -2492,8 +2498,8 @@ int DataAdapter::encode_attr (DeviceDesc * _ddesc,
             //- get c-string from matlab char array.
             cstr = ::mxArrayToString(cell);
             if (cstr == 0) {
-              MEX_UTILS->set_error("internal error", 
-                                   "could not extract string from cell", 
+              MEX_UTILS->set_error("internal error",
+                                   "could not extract string from cell",
                                    "DataAdapter::encode_attr");
               delete dest;
               return kError;
@@ -2510,7 +2516,7 @@ int DataAdapter::encode_attr (DeviceDesc * _ddesc,
           value_.dim_x = ::mxGetM(transposed_argin);
           value_.dim_y = ::mxGetN(transposed_argin);
         } break;
-      } //- switch attr_type 
+      } //- switch attr_type
     } break; //- IMAGE
     //-- UNKNOWN ATTRIBUTE ------------------------------------------
     default:
@@ -2518,7 +2524,7 @@ int DataAdapter::encode_attr (DeviceDesc * _ddesc,
       std::string d = "unsupported TANGO data type for attribute <" + attr_list[_attr_id].name + ">";
       MEX_UTILS->set_error("unexpected TANGO data type",
                            d.c_str(),
-                           "DataAdapter::encode_argin");                   
+                           "DataAdapter::encode_argin");
       } break;
     } //- switch::attr_format
   } //try
@@ -2534,7 +2540,7 @@ int DataAdapter::encode_attr (DeviceDesc * _ddesc,
   }
   return kNoError;
 }
-                         
+
 //=============================================================================
 //- DataAdapter::decode_attr
 //=============================================================================
@@ -2611,7 +2617,7 @@ template<> int DataAdapter::vector_to_mxarray<Tango::DevBoolean,Tango::DevVarBoo
         return 1;
     }
     const Tango::DevBoolean *from = var_array->get_buffer();
-    
+
     if (rsize > 0) {
         value_ = ::mxCreateLogicalArray(2, rdims);
         if (value_ == 0) {
@@ -2633,7 +2639,7 @@ template<> int DataAdapter::vector_to_mxarray<Tango::DevBoolean,Tango::DevVarBoo
         value_ = ::mxCreateLogicalMatrix(0, 0);
     }
     from += woff;
-    
+
     if (wsize > 0) {
         setvalue_ = ::mxCreateLogicalArray(2, wdims);
         if (setvalue_ == 0) {
@@ -2654,7 +2660,7 @@ template<> int DataAdapter::vector_to_mxarray<Tango::DevBoolean,Tango::DevVarBoo
     else {
         setvalue_ = ::mxCreateLogicalMatrix(0, 0);
     }
-    
+
     delete var_array;
     return 0;
 }
@@ -2662,7 +2668,7 @@ template<> int DataAdapter::vector_to_mxarray<Tango::DevBoolean,Tango::DevVarBoo
 int DataAdapter::decode_attr (DeviceDesc* _ddesc,
                               int _attr_id,
                               Tango::DeviceAttribute& _value,
-                              mxArray *& value_, 
+                              mxArray *& value_,
                               mxArray *& setvalue_)
 {
     //- check input
@@ -2673,7 +2679,7 @@ int DataAdapter::decode_attr (DeviceDesc* _ddesc,
                              "DataAdapter::decode_attr");
         return kError;
     }
-    
+
     //- check input
     if (_attr_id < 0)
     {
@@ -2682,7 +2688,7 @@ int DataAdapter::decode_attr (DeviceDesc* _ddesc,
                              "DataAdapter::decode_attr");
         return kError;
     }
-    
+
     //- get attr list
     const DeviceDesc::MinAttrInfoList &attr_list = _ddesc->attr_list();
     //- get attr access
@@ -2691,7 +2697,7 @@ int DataAdapter::decode_attr (DeviceDesc* _ddesc,
     int attr_format = attr_list[_attr_id].data_format;
     //- get attr data type
     int attr_type = attr_list[_attr_id].data_type;
-    
+
     //- extract data
     try
     {
@@ -2842,7 +2848,9 @@ int DataAdapter::decode_attr (DeviceDesc* _ddesc,
                 if (vector_to_mxarray<Tango::DevUShort,Tango::DevVarUShortArray,uint16_T>
                 (_value,rdims,wdims,woff,::mxUINT16_CLASS,rsize,wsize,value_,setvalue_)) return kError;
             } break;
-                //-- SCALAR/SPECTRUM/IMAGE::DEV_SHORT --------------
+            //-- DEV_ENUM ------------------------------------
+            case Tango::DEV_ENUM:
+            //-- DEV_SHORT -----------------------------------
             case Tango::DEV_SHORT:
             {
                 if (vector_to_mxarray<Tango::DevShort,Tango::DevVarShortArray,int16_T>
@@ -2927,19 +2935,19 @@ int DataAdapter::decode_attr (DeviceDesc* _ddesc,
     }
     return kNoError;
 }
-                         
+
 //=============================================================================
 //- DataAdapter::mxarray_to_vector_of_string
-//============================================================================= 
-std::vector<std::string> * DataAdapter::mxarray_to_vector_of_string (const mxArray* mx_array) 
+//=============================================================================
+std::vector<std::string> * DataAdapter::mxarray_to_vector_of_string (const mxArray* mx_array)
 {
  //- be sure mx_array is a cell array of string
- if (MEX_UTILS->is_array_of_string(mx_array) == false) 
+ if (MEX_UTILS->is_array_of_string(mx_array) == false)
  {
    MEX_UTILS->set_error("invalid mxArray specified",
                         "cell array of string expected",
                         "DataAdapter::mxarray_to_vector_of_string");
-   SET_DEFAULT_PRHS_THEN_RETURN(0); 
+   SET_DEFAULT_PRHS_THEN_RETURN(0);
  }
  //- # elements in mx_array
  Tango::DevLong n = ::mxGetN(mx_array);
@@ -2949,11 +2957,11 @@ std::vector<std::string> * DataAdapter::mxarray_to_vector_of_string (const mxArr
    MEX_UTILS->set_error("out of memory",
                         "std::vector allocation failed",
                         "DataAdapter::mxarray_to_vector");
-   SET_DEFAULT_PRHS_THEN_RETURN(0); 
+   SET_DEFAULT_PRHS_THEN_RETURN(0);
  }
  //- populate v
  char* s = 0;
- mxArray * tmp = 0; 
+ mxArray * tmp = 0;
  for (Tango::DevLong c = 0; c < n; c++) {
    tmp = ::mxGetCell(mx_array, c);
    if (tmp == 0) {
@@ -2961,7 +2969,7 @@ std::vector<std::string> * DataAdapter::mxarray_to_vector_of_string (const mxArr
      MEX_UTILS->set_error("invalid mxArray specified",
                           "unexpected empty cell",
                           "DataAdapter::mxarray_to_vector");
-     SET_DEFAULT_PRHS_THEN_RETURN(0); 
+     SET_DEFAULT_PRHS_THEN_RETURN(0);
    }
    s = ::mxArrayToString(tmp);
    ((*v)[c]).assign(s);
@@ -2969,18 +2977,18 @@ std::vector<std::string> * DataAdapter::mxarray_to_vector_of_string (const mxArr
  }
  return v;
 }
-                         
+
 //=============================================================================
 //- DataAdapter::mxarray_to_vector_of_vector_of_string
-//============================================================================= 
-std::vector<std::vector<std::string> >* 
+//=============================================================================
+std::vector<std::vector<std::string> >*
 DataAdapter::mxarray_to_vector_of_vector_of_string (const mxArray* mx_array)
 {
  if (MEX_UTILS->is_array_of_array_of_string(mx_array) == false) {
    MEX_UTILS->set_error("invalid mxArray specified",
                         "expected cell array of cell array of string",
                         "DataAdapter::mxarray_to_vector_of_vector_of_string");
-   SET_DEFAULT_PRHS_THEN_RETURN(0); 
+   SET_DEFAULT_PRHS_THEN_RETURN(0);
  }
  //- # elements in mx_array
  Tango::DevLong n = ::mxGetN(mx_array);
@@ -2990,7 +2998,7 @@ DataAdapter::mxarray_to_vector_of_vector_of_string (const mxArray* mx_array)
    MEX_UTILS->set_error("out of memory",
                         "std::vector allocation failed",
                         "DataAdapter::mxarray_to_vector_of_vector_of_string");
-   SET_DEFAULT_PRHS_THEN_RETURN(0); 
+   SET_DEFAULT_PRHS_THEN_RETURN(0);
  }
  //- mx_array is an array of array
  char* s = 0;
@@ -3004,11 +3012,11 @@ DataAdapter::mxarray_to_vector_of_vector_of_string (const mxArray* mx_array)
      MEX_UTILS->set_error("invalid mxArray specified",
                           "unexpected empty cell",
                           "DataAdapter::mxarray_to_vector_of_vector_of_string");
-     SET_DEFAULT_PRHS_THEN_RETURN(0); 
+     SET_DEFAULT_PRHS_THEN_RETURN(0);
    }
    //- get # elements of tmp
    tmp_n = ::mxGetN(tmp);
-   //- populate the i-th vector of v 
+   //- populate the i-th vector of v
    for (Tango::DevLong j = 0; j < tmp_n; j++) {
      s = ::mxArrayToString(::mxGetCell(tmp, j));
      if (s == 0) {
@@ -3016,7 +3024,7 @@ DataAdapter::mxarray_to_vector_of_vector_of_string (const mxArray* mx_array)
        MEX_UTILS->set_error("invalid mxArray specified",
                             "expected cell array of cell array of string",
                             "DataAdapter::mxarray_to_vector_of_vector_of_string");
-       SET_DEFAULT_PRHS_THEN_RETURN(0); 
+       SET_DEFAULT_PRHS_THEN_RETURN(0);
      }
      (*v)[i].push_back(std::string(s));
      ::mxFree(s);
@@ -3024,29 +3032,29 @@ DataAdapter::mxarray_to_vector_of_vector_of_string (const mxArray* mx_array)
  }
  return v;
 }
-                         
+
 //=============================================================================
 //- DataAdapter::mxarray_to_vector_dvlsa
-//============================================================================= 
-std::vector<Tango::DevVarLongStringArray*>* 
+//=============================================================================
+std::vector<Tango::DevVarLongStringArray*>*
 DataAdapter::mxarray_to_vector_of_dvlsa (const mxArray* mx_array)
 {
  if (MEX_UTILS->is_array_of_struct(mx_array) == false) {
    MEX_UTILS->set_error("invalid mxArray specified",
                         "expected cell array of struct",
                         "DataAdapter::mxarray_to_vector_of_dvlsa");
-   SET_DEFAULT_PRHS_THEN_RETURN(0); 
+   SET_DEFAULT_PRHS_THEN_RETURN(0);
  }
  //- # elements in mx_array
  size_t n = ::mxGetN(mx_array);
  //- allocate the returned vector
- std::vector<Tango::DevVarLongStringArray*>* v 
+ std::vector<Tango::DevVarLongStringArray*>* v
  = new (std::nothrow) std::vector<Tango::DevVarLongStringArray*>(n, 0);
  if (v == 0 || (*v).size() != n) {
    MEX_UTILS->set_error("out of memory",
                         "std::vector allocation failed",
                         "DataAdapter::mxarray_to_vector_of_dvlsa");
-   SET_DEFAULT_PRHS_THEN_RETURN(0); 
+   SET_DEFAULT_PRHS_THEN_RETURN(0);
  }
  //- for each cell in the array
  size_t i, j;
@@ -3097,12 +3105,12 @@ DataAdapter::mxarray_to_vector_of_dvlsa (const mxArray* mx_array)
                           "DataAdapter::mxarray_to_vector_of_dvlsa");
      goto _error;
    }
-   //- store lvalue into the numeric part of the DevVarLongStringArray  
-   size_t len = ::mxGetN(lvalue); 
+   //- store lvalue into the numeric part of the DevVarLongStringArray
+   size_t len = ::mxGetN(lvalue);
    dest->lvalue.length(len);
    ::memcpy(dest->lvalue.get_buffer(), ::mxGetData(lvalue), len * sizeof(Tango::DevLong));
    //- store svalue into the string part of the DevVarLongStringArray
-   len = ::mxGetN(svalue); 
+   len = ::mxGetN(svalue);
    dest->svalue.length(len);
    for (j = 0; j < len; j++) {
      //- get <i>th cell of the array
@@ -3123,8 +3131,8 @@ DataAdapter::mxarray_to_vector_of_dvlsa (const mxArray* mx_array)
      //- get c-string from matlab char array.
      cstr = ::mxArrayToString(cell);
      if (cstr == 0) {
-       MEX_UTILS->set_error("internal error", 
-                            "could not extract string from cell", 
+       MEX_UTILS->set_error("internal error",
+                            "could not extract string from cell",
                             "DataAdapter::mxarray_to_vector_of_dvlsa");
        goto _error;
      }
@@ -3144,29 +3152,29 @@ _error:
  delete v;
  return 0;
 }
-                         
+
 //=============================================================================
 //- DataAdapter::mxarray_to_vector_dvdsa
-//============================================================================= 
-std::vector<Tango::DevVarDoubleStringArray*>* 
+//=============================================================================
+std::vector<Tango::DevVarDoubleStringArray*>*
 DataAdapter::mxarray_to_vector_of_dvdsa (const mxArray* mx_array)
 {
  if (MEX_UTILS->is_array_of_struct(mx_array) == false) {
    MEX_UTILS->set_error("invalid mxArray specified",
                         "expected cell array of struct",
                         "DataAdapter::mxarray_to_vector_of_dvdsa");
-   SET_DEFAULT_PRHS_THEN_RETURN(0); 
+   SET_DEFAULT_PRHS_THEN_RETURN(0);
  }
  //- # elements in mx_array
  size_t n = ::mxGetN(mx_array);
  //- allocate the returned vector
- std::vector<Tango::DevVarDoubleStringArray*>* v 
+ std::vector<Tango::DevVarDoubleStringArray*>* v
  = new (std::nothrow) std::vector<Tango::DevVarDoubleStringArray*>(n, 0);
  if (v == 0 || (*v).size() != n) {
    MEX_UTILS->set_error("out of memory",
                         "std::vector allocation failed",
                         "DataAdapter::mxarray_to_vector_of_dvdsa");
-   SET_DEFAULT_PRHS_THEN_RETURN(0); 
+   SET_DEFAULT_PRHS_THEN_RETURN(0);
  }
  //- for each cell in the array
  size_t i, j;
@@ -3217,12 +3225,12 @@ DataAdapter::mxarray_to_vector_of_dvdsa (const mxArray* mx_array)
                           "DataAdapter::mxarray_to_vector_of_dvdsa");
      goto _error;
    }
-   //- store lvalue into the numeric part of the DevVarLongStringArray  
-   size_t len = ::mxGetN(dvalue); 
+   //- store lvalue into the numeric part of the DevVarLongStringArray
+   size_t len = ::mxGetN(dvalue);
    dest->dvalue.length(len);
    ::memcpy(dest->dvalue.get_buffer(), ::mxGetData(dvalue), len * sizeof(Tango::DevDouble));
    //- store svalue into the string part of the DevVarLongStringArray
-   len = ::mxGetN(svalue); 
+   len = ::mxGetN(svalue);
    dest->svalue.length(len);
    for (j = 0; j < len; j++) {
      //- get <i>th cell of the array
@@ -3243,8 +3251,8 @@ DataAdapter::mxarray_to_vector_of_dvdsa (const mxArray* mx_array)
      //- get c-string from matlab char array.
      cstr = ::mxArrayToString(cell);
      if (cstr == 0) {
-       MEX_UTILS->set_error("internal error", 
-                            "could not extract string from cell", 
+       MEX_UTILS->set_error("internal error",
+                            "could not extract string from cell",
                             "DataAdapter::mxarray_to_vector_of_dvdsa");
        goto _error;
      }

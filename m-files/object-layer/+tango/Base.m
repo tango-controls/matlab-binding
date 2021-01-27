@@ -1,3 +1,4 @@
+
 classdef Base < cs.Device&tango.Access
     %tango.Base: Base class for tango devices and groups
     
@@ -31,7 +32,7 @@ classdef Base < cs.Device&tango.Access
             arrayfun(@scancommands,cmdlist);
             function info=scanattributes(attrinfo)
                 pollperiod=self.dvz(@tango_get_attribute_poll_period,attrinfo.name);
-                info=self.attrdefine(attrinfo,pollperiod);
+                info=self.attrdefine(name,attrinfo,pollperiod);
                 if ~any(strcmp(info.name,{'Status','State'}))
                     if info.writable
                         self.addattribute(info.name,@(dev) dev.get1attr(info),...

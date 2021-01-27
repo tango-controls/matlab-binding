@@ -12,33 +12,36 @@ classdef (ConstructOnLoad) Device < tango.Base
     %   >> argout=dev.command_name(argin);
     %
     % Device Properties:
-    %Name       Name of the device (RO)
-    %Source     Source (tango.DevSource.DEV, tango.DevSource.CACHE, tango.DevSource.CACHE_DEV)
-    %State      State of the device (tango.DevState enumeration, RO)
-    %Status     Status string (RO)
-    %Timeout    Client time-out [s] (RW)
-    %......     Any Tango attribute is available as a property
+    %Name           Name of the device (RO)
+    %Description	Device description
+    %Info           Device information (server, host...)
+    %Source         Source (tango.DevSource.DEV, tango.DevSource.CACHE, tango.DevSource.CACHE_DEV)
+    %State          State of the device (tango.DevState enumeration, RO)
+    %Status         Status string (RO)
+    %Timeout        Client time-out [s] (RW)
+    %......         Any Tango attribute is available as a property
     %
     % Device Methods:
-    %cmd        Send a command
-    %check      Send an optional command and wait for a resulting condition
-    %attributes List of Tango attributes
-    %commands   List of Tango commands
-    %attrinfo   Get attribute information
-    %cmdinfo    Get command information
-    %isState    Checks the device state
+    %cmd            Send a command
+    %check          Send an optional command and wait for a resulting condition
+    %attributes     List of Tango attributes
+    %commands       List of Tango commands
+    %attrinfo       Get attribute information
+    %cmdinfo        Get command information
+    %isState        Checks the device state
     %set_property   Set a property value
     %get_property   Get a property value
     %del_property   Delete a property
-    %......     Any Tango command is available as a method
+    %......         Any Tango command is available as a method
     
     properties(Dependent=true,SetAccess=private)
+        Description % Device description (RO)
         Name	% Device name (RO)
         State	% State of the device (tango.DevState enumeration) (RO)
         Status	% Status string (RO)
     end
     properties(Dependent=true)
-        Source	% Device source (RW) (DEV, CACHE, CACHE_DEV)
+        Source	% Device source (DEV, CACHE, CACHE_DEV) (RW)
     end
     
     methods(Access=protected,Hidden)
@@ -67,6 +70,9 @@ classdef (ConstructOnLoad) Device < tango.Base
         
         function nam=get.Name(dev)
             nam=dev.devname;
+        end
+        function desc=get.Description(dev)
+            desc=dev.dvz(@tango_description);
         end
         function State=get.State(dev)
             replies=dev.dvz(@tango_read_attribute,'State');
@@ -97,7 +103,11 @@ classdef (ConstructOnLoad) Device < tango.Base
             %Get Tango attribute values
             %value=device.get_attribute(attrname1[,attrname2,...])
             %attrname:	attribute name
-            %value:     structure with fields "set","read","time","quality"
+            %value:     structure with fields "set","read","time","quality,"error"
+            %
+            %   As get_attribute may return several attribute values, it will not raise
+            %   an exception if one attribute fails. Instead, errors are reported in the
+            %   "error" field of each attribute. This should always be tested
             replies=dev.dvz(@tango_read_attributes,varargin);
             %             failed=logical([replies.has_failed]);      % Anyway, an INVALID attribute
             %             if any(failed)                                  % generated an error with no stack
@@ -123,14 +133,18 @@ classdef (ConstructOnLoad) Device < tango.Base
             %value=device.get_attribute_reply(request,timeout)
             %request:   identifier returned by "get_attribute_asynch"
             %timeout:   time in ms to wait before generating an error (default 30000)
-            %value:     structure with fields "set","read","time","quality"
+            %value:     structure with fields "set","read","time","quality,"error"
+            %
+            %   As get_attribute may return several attribute values, it will not raise
+            %   an exception if one attribute fails. Instead, errors are reported in the
+            %   "error" field of each attribute. This should always be tested
             %
             %Usage:
             %>> request=device.get_attribute_asynch('attrname1','attrname2',...);
             %>> %do something
             %>> value=device.get_attribute_reply(request,0);
-            replies=tango_read_attributes_reply(req,tmout);
-            if tango_error < 0
+            replies=tango_read_attributes_reply(req,tmout); % Cannot use dvz because the 1st
+            if tango_error < 0                              % argument is not the device handle
                 tango.Error(dev.Name,'tango_read_attributes_reply','tango_read_attributes_reply',...
                     tango_error_stack).throw();
             end
@@ -164,29 +178,37 @@ classdef (ConstructOnLoad) Device < tango.Base
                 val=struct('set',defval,'read',defval,'error',err);
             end
         end
-        function propval=get_property(dev,propname)
+        function varargout=get_property(dev,varargin)
             %Get a device property
-            %value=device.get_property(propname)
-            %propname:	property name
-            prop=dev.dvz(@tango_get_property,propname);
-            propval=prop.value;
-        end
-        function set_property(dev,propname,value)
-            %Set a device property
-            %device.set_property(propname,value)
+            %[value1,value2,...]=device.get_property(propname1,propname2,...)
             %propname:	property name
             %value:     property value as a cell array of strings
-            if ~iscellstr(value)
-                dev.error('WrongDataType','Wrong data type',...
-                    'Property value must be a cell array of strings.').throw();
-            end
-            dev.dvz(@tango_put_property,propname,value);
+            prop=dev.dvz(@tango_get_properties,varargin);
+            varargout={prop.value};
         end
-        function del_property(dev,propname)
+        function set_property(dev,varargin)
+            %Set a device property
+            %device.set_property(propname1,value1,propname2,value2,...)
+            %propname:	property name
+            %value:     property value
+            %
+            %device.set_property(propstruct)
+            %propstruct:    struct where fieldname is the property name and
+            %               value is the property value
+            if length(varargin)==1 && isstruct(varargin{1})
+                propnames=fieldnames(varargin{1})';
+                propvalues=cellfun(@tango.property_string,struct2cell(varargin{1})','UniformOutput',false);
+            else
+                propnames=varargin(1:2:end);
+                propvalues=cellfun(@tango.property_string,varargin(2:2:end),'UniformOutput',false);
+            end
+            dev.dvz(@tango_put_properties,struct('name',propnames,'value',propvalues));
+        end
+        function del_property(dev,varargin)
             %Delete a device property
-            %device.del_property(propname)
+            %device.del_property(propname1,propname2,...)
             %propname:   property name
-            dev.dvz(@tango_del_property,propname);
+            dev.dvz(@tango_del_properties,varargin);
         end
         function attr=attribute(dev,attrname)
             attr=tango.Attribute(struct('devname',dev.Name,'attrname',...
