@@ -121,14 +121,7 @@ classdef (ConstructOnLoad) Attribute  < tango.Access
                 self.attrname=attrname;
             end
             if self.attrinfo.is_enum
-		        num_labels = size(self.attrinfo.enum.labels, 2);
-		        %addprop(self, 'labels');
-		        %s.type = '.';
-                %s.subs = 'labels';
-                %tmp = subsasgn(self, s, struct());
-          		for l = 1:num_labels
-                    self.labels.(self.attrinfo.enum.labels{l}) = self.attrinfo.enum.values(l);
-	            end
+                self.labels = self.attrinfo.enum.labels
             end
         end
         function set.set(self,val)

@@ -23,12 +23,12 @@ classdef DevEnum
       num_labels = size(ac.enum_labels.labels, 2);
       o.device = device_name;
       o.attribute = attribute_name;
-      o.labels = cell(1, num_labels);
+      o.labels = struct();
       o.values = int16(zeros(1, num_labels));
       o.value2label = containers.Map("KeyType", "uint32", "ValueType", "char");
       o.label2value = containers.Map("KeyType", "char", "ValueType", "uint32");
       for l = 1:num_labels;
-        o.labels{l} = ac.enum_labels.labels{l};
+        o.labels.(ac.enum_labels.labels{l}) = int16(ac.enum_labels.ids(l));
         o.values(l) = int16(ac.enum_labels.ids(l));
         o.value2label(uint32(ac.enum_labels.ids(l))) = ac.enum_labels.labels{l};
         o.label2value(ac.enum_labels.labels{l}) = uint32(ac.enum_labels.ids(l));
