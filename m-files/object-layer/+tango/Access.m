@@ -10,8 +10,12 @@ classdef Access < handle
         handle=''
     end
     
+    properties(Dependent=true, SetAccess=private)
+        Info        % Device information (server, host...) (RO)
+        Admin_name  % Administrator Device (RO)
+    end
     properties(Dependent=true)
-        Timeout % Client time-out [s],RW
+        Timeout     % Client time-out [s] (RW)
     end
     
     properties(Abstract,Access=protected,Hidden)
@@ -76,12 +80,18 @@ classdef Access < handle
                 [varargout{:}]=dvfunc(self.handle, varargin{:});
             end
             if tango_error < 0
-                tango.Error(self.devname,func2str(dvfunc),func2str(dvfunc),tango_error_stack).throw();
+                tango.Error(self.devname,func2str(dvfunc),func2str(dvfunc),tango_error_stack).throwAsCaller();
             end
         end
     end
     
     methods
+        function inf=get.Info(self)
+            inf=self.dvz(@tango_info);
+        end
+        function adname=get.Admin_name(self)
+            adname=self.dvz(@tango_admin_name);
+        end
         function tmo=get.Timeout(self)
             tmo=0.001*self.dvz(@tango_get_timeout);
         end

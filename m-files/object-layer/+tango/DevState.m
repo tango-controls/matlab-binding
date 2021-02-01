@@ -23,6 +23,15 @@ classdef DevState < cs.DevState
                 state=tango.DevState(statename);
             end
         end
+        function state=Undef(varargin)
+            if nargin==0
+                state=tango.DevState.Unknown;
+            elseif nargin==1 && isscalar(varargin{1})
+                state=tango.DevState.Undef(varargin{[1 1]});
+            else
+                state=repmat(tango.DevState.Unknown,varargin{:});
+            end
+        end
     end
     
     enumeration
