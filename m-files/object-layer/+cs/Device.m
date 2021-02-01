@@ -20,19 +20,46 @@ classdef Device < dynamicprops
     methods(Abstract,Static,Access=protected,Hidden)
         st=any2state(code)
     end
-    methods(Static,Access=protected)
-	function varargout = decodeargs(default_values,args)
-	%[arg1,arg2,...]=decodeargs(default_values,argin)
-	%   Check and expands optional argument lists
-	na=min(length(default_values),length(args));
-	ok=~cellfun(@isempty,args(1:na));
-	default_values(ok)=args(ok);
-	if nargout==length(default_values)
-	    varargout=default_values;
-	else
-	    varargout{1}=default_values;
-	end
-	end
+    methods(Static)
+        function idx=planeid(plane,choices,inp)
+            %idx=planeid(plane)
+            %   plane: h|H|x|X|1, v|V|z|Z|2
+            %idx: 1 for horizontal
+            %     2 for vertical
+            %     error for other
+            %
+            %idx=planeid(plane,choices)
+            %   plane: h|H|x|X|1, v|V|z|Z|2
+            %idx: choices(1) for horizontal
+            %     choices(2) for vertical
+            %     choices(3) for other, or error
+            
+            if nargin < 3
+                inp={{'X','H'},{'Z','V'},'S'};
+            end
+            if nargin < 2
+                choices=[1,2];
+            end
+            idx=0;
+            if ischar(plane)
+                for i=1:length(inp)
+                    if any(strcmpi(plane,inp{i}))
+                        idx=i;
+                        break;
+                    end
+                end
+            elseif isscalar(plane) && isnumeric(plane)
+                idx=plane;
+            end
+            if idx <= 0 || idx > length(choices)
+                error('cs:plane','plane should be h|H|x|X|1 or v|V|z|Z|2');
+            end
+            if iscell(choices)
+                idx=choices{idx};
+            else
+                idx=choices(idx);
+            end
+        end
     end
     methods(Access=protected,Hidden)
         function prop=addcommand(self,cmdname)
@@ -97,14 +124,14 @@ classdef Device < dynamicprops
             %ok=device.check(command,testfun,timeout)
             %command:   command name, may be {command,argin}
             if ~isempty(varargin) && isa(varargin{1},'function_handle')
-                [cmdargs,testfunc,tmout]=self.decodeargs({{},@(dev) true,{}},[{{}},varargin]);
+                [cmdargs,testfunc,tmout]=cs.getargs([{{}},varargin],{{},@(dev) true,{}});
             else
-                [cmdargs,testfunc,tmout]=self.decodeargs({{},@(dev) true,{}},varargin);
+                [cmdargs,testfunc,tmout]=cs.getargs(varargin,{{},@(dev) true,{}});
             end
             if ~iscell(tmout)
                 tmout={[],tmout};
             end
-            [initim,totaltim,polltim]=self.decodeargs({0,0,0.5},tmout);
+            [initim,totaltim,polltim]=cs.getargs(tmout,{0,0,0.5});
             if ~isempty(cmdargs)
                 if ~iscell(cmdargs), cmdargs={cmdargs}; end
                 self.cmd(cmdargs{:});

@@ -24,34 +24,35 @@
 #------------------------------------------------------------------------------
 # OMNIORB BASE DIR
 #------------------------------------------------------------------------------
-OMNIORB_BASE=/home/nicolas/tango-8.1.2c-gcc-4.7-gstabs
+OMNIORB_BASE=/usr
 
 #------------------------------------------------------------------------------
 # ZMQ_BASE BASE DIR
 #------------------------------------------------------------------------------
-ZMQ_BASE=/home/nicolas/tango-8.1.2c-gcc-4.7-gstabs
+ZMQ_BASE=/usr
 
 #------------------------------------------------------------------------------
 # TANGO BASE DIR
 #------------------------------------------------------------------------------
-TANGO_BASE=/home/nicolas/tango-8.1.2c-gcc-4.7-gstabs
+TANGO_BASE=/usr
 
 #------------------------------------------------------------------------------
 # LOG4TANGO BASE DIR
 #------------------------------------------------------------------------------
-LOG4TANGO_BASE=$(TANGO_BASE)
+LOG4TANGO_BASE=/usr
 
 #------------------------------------------------------------------------------
 # OCTAVE DIRS
 #------------------------------------------------------------------------------
-OCTAVE_INC=/usr/include/octave-3.6.2
+OCTAVE_INC=/usr/include/octave-5.2.0
 OCTAVE_LIB=/usr/lib/i386-linux-gnu
 
 #------------------------------------------------------------------------------
 # INCLUDE DIRS
 #------------------------------------------------------------------------------
 INCLUDE_DIRS = -I. \
-               -I$(OMNIORB_BASE)/include \
+               -I$(OMNIORB_BASE)/include/omniORB4 \
+               -I$(OMNIORB_BASE)/include/omnithread \
                -I$(ZMQ_BASE)/include \
                -I$(TANGO_BASE)/include/tango \
                -I$(OCTAVE_INC)/octave
@@ -77,9 +78,9 @@ MEX_NAME = tango_binding
 CC=gcc
 CXX=g++
 #------------------------------------------------------------------------------
-CFLAGS  = -fPIC -W -Wall -Wno-unused -Wno-comment -Wno-sign-compare -fno-enforce-eh-specs
+CFLAGS  = -fPIC -W -Wno-deprecated -Wno-deprecated-declarations -Wno-unused -Wno-comment -Wno-sign-compare -fno-enforce-eh-specs
 CFLAGS += -D_REENTRANT -DMATLAB_MEX_FILE -DOMNI_UNLOADABLE_STUBS
-#CFLAGS += -DMAP_DEV_BOOLEAN_TO_MATLAB_LOGICAL
+CFLAGS += -DMAP_DEV_BOOLEAN_TO_MATLAB_LOGICAL
 #------------------------------------------------------------------------------
 LD = $(CC)
 #------------------------------------------------------------------------------
